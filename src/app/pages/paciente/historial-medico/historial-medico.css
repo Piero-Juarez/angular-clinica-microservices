@@ -1,0 +1,145 @@
+.history-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #000;
+}
+
+.page-header {
+  border-bottom: 4px solid #000;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+
+  h1 { font-size: 2.5rem; text-transform: uppercase; font-weight: 800; margin: 0; }
+  p { font-size: 1.1rem; color: #555; margin-top: 0.5rem; }
+}
+
+.history-grid {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 2rem;
+  align-items: start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* PERFIL CLÍNICO (LATERAL) */
+.clinical-profile {
+  position: sticky;
+  top: 2rem;
+}
+
+.profile-card {
+  border: 4px solid #000;
+  background: #fff;
+  box-shadow: 8px 8px 0 #000;
+  padding: 2rem;
+
+  h2 { font-weight: 800; text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 0.5rem; margin-top: 0; }
+  .last-update { font-size: 0.8rem; font-style: italic; color: #666; margin-bottom: 1.5rem; }
+
+  .profile-item {
+    margin-bottom: 1.5rem;
+
+    .label { display: inline-block; font-weight: 800; background: #000; color: #fff; padding: 0.2rem 0.5rem; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 0.5rem; }
+    p { margin: 0; font-weight: 600; border-left: 3px solid #000; padding-left: 0.8rem; }
+  }
+}
+
+/* REGISTRO DE CONSULTAS (PRINCIPAL) */
+.consultations-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  h2 { font-weight: 800; font-size: 2rem; text-transform: uppercase; margin: 0; }
+}
+
+.consultation-card {
+  border: 4px solid #000;
+  background: #fdfdfd;
+  box-shadow: 6px 6px 0 #000;
+
+  h4 { margin: 0 0 0.8rem 0; font-weight: 800; text-transform: uppercase; font-size: 1rem; border-bottom: 2px dashed #ccc; padding-bottom: 0.2rem;}
+
+  .consultation-header {
+    background: #000;
+    color: #fff;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    h3 { margin: 0; font-weight: 800; font-size: 1.3rem; }
+    .doctor-badge { background: #fff; color: #000; font-weight: 800; padding: 0.3rem 0.6rem; font-size: 0.85rem; font-family: monospace; }
+  }
+
+  .consultation-body {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    .reason-box p { margin: 0.5rem 0; font-size: 1.1rem; }
+
+    .vitals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 1rem;
+      background: #f0f0f0;
+      padding: 1rem;
+      border: 2px solid #000;
+
+      span { font-size: 0.95rem; }
+    }
+
+    .diagnoses-box ul {
+      list-style-type: square;
+      padding-left: 1.2rem;
+      margin: 0;
+      li { margin-bottom: 0.5rem; font-size: 1.05rem; }
+    }
+
+    .prescriptions-box {
+      border: 2px solid #000;
+      padding: 1.5rem;
+      background: #fff;
+
+      .prescription-item {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px dashed #eee;
+
+        &:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+
+        .pill-icon { font-size: 2rem; }
+        .rx-details {
+          strong { font-size: 1.1rem; text-transform: uppercase; }
+          p { margin: 0.2rem 0; }
+          .instructions { font-style: italic; color: #555; font-size: 0.9rem; }
+        }
+      }
+    }
+
+    .notes-box {
+      background: #ffffcc; /* Tono amarillo sutil estilo 'post-it' */
+      border: 2px solid #000;
+      padding: 1rem;
+      p { margin: 0; font-weight: 600; }
+    }
+  }
+}
+
+.pagination {
+  display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 2rem;
+  button { padding: 0.8rem 1.5rem; border: 3px solid #000; background: #fff; font-weight: 800; text-transform: uppercase; cursor: pointer; box-shadow: 4px 4px 0 #000; }
+  button:active { transform: translate(4px, 4px); box-shadow: 0 0 0 #000; }
+  button:disabled { border-color: #ccc; color: #ccc; box-shadow: none; cursor: not-allowed; transform: none; }
+  span { font-weight: 800; background: #000; color: #fff; padding: 0.5rem 1rem; }
+}

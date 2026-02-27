@@ -1,0 +1,132 @@
+<div class="booking-container">
+
+  <header class="booking-header">
+    <h1>Reservar Cita Médica</h1>
+    @if (step === 1) {
+      <p>Paso 1: Elige a tu especialista</p>
+    }
+    @if (step === 2) {
+      <p>Paso 2: Selecciona fecha y hora</p>
+    }
+  </header>
+
+  @if (step === 1) {
+    <div class="step-1">
+
+      <div class="search-bar">
+        <input type="text" [(ngModel)]="specialtySearch" placeholder="Buscar por especialidad (Ej: Cardiología)..." (keyup.enter)="onSearch()">
+        <button class="btn-black" (click)="onSearch()">Buscar</button>
+      </div>
+
+      @if (isLoadingDoctors) {
+        <div class="loading-state">Cargando especialistas...</div>
+      }
+
+      @if (!isLoadingDoctors) {
+        <div class="doctor-grid">
+          @for (doc of doctors; track doc.id) {
+            <div class="doctor-card">
+              <div class="doc-header">
+                <h3>Dr(a). {{ doc.personData.name }} {{ doc.personData.lastName }}</h3>
+                <span class="specialty-badge">{{ doc.mainSpecialty }}</span>
+              </div>
+              <div class="doc-body">
+                <p><strong>CMP:</strong> {{ doc.cmp }} | <strong>RNE:</strong> {{ doc.rne || 'N/A' }}</p>
+                <p><strong>Experiencia:</strong> {{ doc.yearsOfExperience }} años</p>
+                <p class="bio">{{ doc.publicBiography }}</p>
+              </div>
+              <button class="btn-select" (click)="selectDoctor(doc)">Seleccionar</button>
+            </div>
+          }
+        </div>
+      }
+
+      @if (totalPages > 1 && !isLoadingDoctors) {
+        <div class="pagination">
+          <button [disabled]="currentPage === 0" (click)="loadDoctors(currentPage - 1)">Anterior</button>
+          <span>Página {{ currentPage + 1 }} de {{ totalPages }}</span>
+          <button [disabled]="currentPage >= totalPages - 1" (click)="loadDoctors(currentPage + 1)">Siguiente</button>
+        </div>
+      }
+    </div>
+  }
+
+  @if (step === 2) {
+    <div class="step-2">
+      <button class="btn-outline" (click)="goBack()">← Volver a elegir médico</button>
+
+      <div class="selected-doc-info">
+        <h3>Reserva con Dr(a). {{ selectedDoctor?.personData?.lastName }}</h3>
+        <p>Especialidad: {{ selectedDoctor?.mainSpecialty }}</p>
+      </div>
+
+      @if (errorMessage) {
+        <div class="form-error">{{ errorMessage }}</div>
+      }
+
+      <div class="booking-form">
+        <div class="form-group">
+          <label>1. Elige la Fecha:</label>
+          <input type="date" [(ngModel)]="selectedDate" [min]="todayDate" (change)="onDateChange()">
+          @if (dateErrorMessage) {
+            <span class="date-error">
+              ⚠ {{ dateErrorMessage }}
+            </span>
+          }
+        </div>
+
+        @if (selectedDate) {
+          <div class="form-group">
+            <label>2. Horarios Disponibles:</label>
+            @if (isLoadingSchedule) {
+              <div>Consultando agenda...</div>
+            }
+
+            @if (!isLoadingSchedule) {
+              <div class="times-grid">
+                @for (slot of availableTimes; track slot.isAvailable) {
+                  <button
+                    class="time-btn"
+                    [class.selected]="appointmentData.time === slot.time"
+                    [disabled]="!slot.isAvailable"
+                    (click)="selectTime(slot.time)"
+                  >
+                    {{ slot.time }}
+                  </button>
+                }
+              </div>
+            }
+
+            @if (availableTimes.length === 0 && !isLoadingSchedule) {
+              <p>No hay turnos disponibles para este día.</p>
+            }
+          </div>
+        }
+
+        @if (appointmentData.time) {
+          <div class="form-group">
+            <label>3. Notas para el médico (Opcional):</label>
+            <textarea [(ngModel)]="appointmentData.notes" rows="3" placeholder="Ej: Me duele el pecho al respirar..."></textarea>
+          </div>
+        }
+
+        @if (appointmentData.time) {
+          <button class="btn-black btn-submit"
+                  [disabled]="isSubmitting"
+                  (click)="submitAppointment()">
+            {{ isSubmitting ? 'Procesando...' : 'Confirmar Cita' }}
+          </button>
+        }
+      </div>
+    </div>
+  }
+
+  @if (step === 3) {
+    <div class="step-3 success-state">
+      <h2>✔ Cita Confirmada</h2>
+      <p>{{ successMessage }}</p>
+      <button class="btn-black" (click)="finish()">Ir a mi panel</button>
+    </div>
+  }
+
+</div>

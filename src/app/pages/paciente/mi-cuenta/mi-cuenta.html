@@ -1,0 +1,197 @@
+<div class="account-container">
+
+  <header class="page-header">
+    <div class="header-titles">
+      <h1>Mi Cuenta</h1>
+      <p>Gestiona tu información personal y de contacto.</p>
+    </div>
+    @if (!isLoading && patientProfile) {
+      <button class="btn-black" (click)="abrirModalEditar()">
+        Modificar Datos
+      </button>
+    }
+  </header>
+
+  @if (isLoading) {
+    <div class="loading-state">Cargando tu información...</div>
+  }
+
+  @if (!isLoading && patientProfile) {
+    <div class="profile-grid">
+
+      <div class="info-card immutable-card">
+        <div class="card-title">
+          <h2>👤 Datos Personales</h2>
+          <span class="badge">No editable</span>
+        </div>
+        <div class="info-list">
+          <div class="info-item">
+            <span class="label">Nombres Completos:</span>
+            <span class="value">{{ patientProfile.personData.name }} {{ patientProfile.personData.lastName }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">{{ patientProfile.personData.documentType }}:</span>
+            <span class="value">{{ patientProfile.personData.documentNumber }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Fecha de Nacimiento:</span>
+            <span class="value">{{ patientProfile.personData.birthDate }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Sexo Biológico:</span>
+            <span class="value">{{ patientProfile.personData.biologicalSex }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Tipo de Sangre:</span>
+            <span class="value blood">{{ patientProfile.bloodType || 'N/A' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h2>📞 Contacto y Residencia</h2>
+        <div class="info-list">
+          <div class="info-item">
+            <span class="label">Celular:</span>
+            <span class="value">{{ patientProfile.personData.phone || 'No registrado' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Correo:</span>
+            <span class="value">{{ patientProfile.personData.email }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Dirección:</span>
+            <span class="value">{{ patientProfile.personData.address || 'No registrado' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Ubigeo:</span>
+            <span class="value">{{ patientProfile.personData.ubigeo || 'No registrado' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Estado Civil:</span>
+            <span class="value">{{ patientProfile.maritalStatus || 'No registrado' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Ocupación:</span>
+            <span class="value">{{ patientProfile.occupation || 'No registrado' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h2>🏥 Seguro y Emergencias</h2>
+        <div class="info-list">
+          <div class="info-item">
+            <span class="label">Seguro de Salud:</span>
+            <span class="value">{{ patientProfile.healthInsurance || 'Particular' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">N° de Póliza:</span>
+            <span class="value">{{ patientProfile.policyNumber || 'N/A' }}</span>
+          </div>
+          <div class="info-item emergency-box">
+            <span class="label">Contacto de Emergencia:</span>
+            <span class="value">{{ patientProfile.emergencyContactName || 'No registrado' }}</span>
+            @if (patientProfile.emergencyContactRelation) {
+              <span class="value detail">
+                Parentesco: {{ patientProfile.emergencyContactRelation }}
+              </span>
+            }
+            @if (patientProfile.emergencyContactPhone) {
+              <span class="value detail">
+                Telf: {{ patientProfile.emergencyContactPhone }}
+              </span>
+            }
+          </div>
+        </div>
+      </div>
+
+    </div>
+  }
+
+  @if (showEditModal) {
+    <div class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Modificar Mis Datos</h2>
+          <button class="close-btn" (click)="cerrarModalEditar()">✖</button>
+        </div>
+
+        <div class="modal-body scrollable">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Celular</label>
+              <input type="text" [(ngModel)]="updateData.phone">
+            </div>
+            <div class="form-group">
+              <label>Estado Civil</label>
+              <select [(ngModel)]="updateData.maritalStatus">
+                <option value="SOLTERO">Soltero(a)</option>
+                <option value="CASADO">Casado(a)</option>
+                <option value="DIVORCIADO">Divorciado(a)</option>
+                <option value="VIUDO">Viudo(a)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Dirección Actual</label>
+            <input type="text" [(ngModel)]="updateData.address">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Ubigeo</label>
+              <input type="text" [(ngModel)]="updateData.ubigeo">
+            </div>
+            <div class="form-group">
+              <label>Ocupación</label>
+              <input type="text" [(ngModel)]="updateData.occupation">
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Seguro de Salud</label>
+              <input type="text" [(ngModel)]="updateData.healthInsurance" placeholder="Ej: RIMAC, ESSALUD...">
+            </div>
+            <div class="form-group">
+              <label>N° de Póliza</label>
+              <input type="text" [(ngModel)]="updateData.policyNumber">
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <h3 class="sub-title">Contacto de Emergencia</h3>
+          <div class="form-group">
+            <label>Nombre Completo</label>
+            <input type="text" [(ngModel)]="updateData.emergencyContactName">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Parentesco</label>
+              <input type="text" [(ngModel)]="updateData.emergencyContactRelation" placeholder="Ej: Madre, Esposo...">
+            </div>
+            <div class="form-group">
+              <label>Teléfono</label>
+              <input type="text" [(ngModel)]="updateData.emergencyContactPhone">
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-black btn-block"
+                  [disabled]="isUpdating"
+                  (click)="guardarCambios()">
+            {{ isUpdating ? 'Guardando...' : 'Guardar Cambios' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

@@ -1,0 +1,136 @@
+<div class="history-container">
+
+  <header class="page-header">
+    <h1>Mi Historial Médico</h1>
+    <p>Consulta tu perfil clínico y el registro de todas tus atenciones.</p>
+  </header>
+
+  @if (isLoading) {
+    <div class="loading-state">Cargando tu información médica...</div>
+  }
+  @if (errorMessage) {
+    <div class="error-state">⚠ {{ errorMessage }}</div>
+  }
+
+  @if (!isLoading && historyData) {
+    <div class="history-grid">
+
+      <aside class="clinical-profile">
+        <div class="profile-card">
+          <h2>Perfil Clínico Base</h2>
+          <p class="last-update">Última act: {{ historyData.clinicalProfile.updatedAt | date:'mediumDate' }}</p>
+
+          <div class="profile-item">
+            <span class="label">Alergias:</span>
+            <p>{{ historyData.clinicalProfile.allergies || 'Ninguna registrada' }}</p>
+          </div>
+
+          <div class="profile-item">
+            <span class="label">Enfermedades Crónicas:</span>
+            <p>{{ historyData.clinicalProfile.chronicConditions || 'Ninguna registrada' }}</p>
+          </div>
+
+          <div class="profile-item">
+            <span class="label">Cirugías Previas:</span>
+            <p>{{ historyData.clinicalProfile.pastSurgeries || 'Ninguna registrada' }}</p>
+          </div>
+
+          <div class="profile-item">
+            <span class="label">Historial Familiar:</span>
+            <p>{{ historyData.clinicalProfile.familyHistory || 'Ninguno registrado' }}</p>
+          </div>
+        </div>
+      </aside>
+
+      <section class="consultations-timeline">
+        <h2>Registro de Consultas</h2>
+
+        @if (historyData.consultations.content.length === 0) {
+          <div class="empty-state">
+            Aún no tienes registros de consultas médicas.
+          </div>
+        }
+
+        @for (consulta of historyData.consultations.content; track consulta.id) {
+          <div class="consultation-card">
+
+            <div class="consultation-header">
+              <h3>{{ consulta.consultationDate | date:'longDate' }}</h3>
+              <span class="doctor-badge">Dr(a). {{ doctorDictionary[consulta.doctorId] || consulta.doctorId }}</span>
+            </div>
+
+            <div class="consultation-body">
+              <div class="reason-box">
+                <h4>Motivo de Consulta:</h4>
+                <p>{{ consulta.reasonForVisit }}</p>
+                <p><strong>Enfermedad Actual:</strong> {{ consulta.currentIllness }}</p>
+              </div>
+
+              @if (consulta.vitalSigns.weightKg > 0) {
+                <div class="vital-signs">
+                  <h4>Signos Vitales:</h4>
+                  <div class="vitals-grid">
+                    <span><strong>Peso:</strong> {{ consulta.vitalSigns.weightKg }}kg</span>
+                    <span><strong>Talla:</strong> {{ consulta.vitalSigns.heightCm }}cm</span>
+                    <span><strong>P.A.:</strong> {{ consulta.vitalSigns.bloodPressure || 'N/A' }}</span>
+                    <span><strong>Temp:</strong> {{ consulta.vitalSigns.temperatureCelsius }}°C</span>
+                    <span><strong>F.C.:</strong> {{ consulta.vitalSigns.heartRateBpm }} lpm</span>
+                    <span><strong>O2:</strong> {{ consulta.vitalSigns.oxygenSaturationPercentage }}%</span>
+                  </div>
+                </div>
+              }
+
+              @if (consulta.diagnoses.length > 0) {
+                <div class="diagnoses-box">
+                  <h4>Diagnósticos:</h4>
+                  <ul>
+                    @for (dx of consulta.diagnoses; track dx.cie10Code) {
+                      <li>
+                        <strong>[{{ dx.cie10Code }}]</strong> {{ dx.description }} <em>({{ dx.type }})</em>
+                      </li>
+                    }
+                  </ul>
+                </div>
+              }
+
+              @if (consulta.prescriptions.length > 0) {
+                <div class="prescriptions-box">
+                  <h4>Receta Médica:</h4>
+                  @for (rx of consulta.prescriptions; track rx.medicationName) {
+                    <div class="prescription-item">
+                      <span class="pill-icon">💊</span>
+                      <div class="rx-details">
+                        <strong>{{ rx.medicationName }}</strong> - Dosis: {{ rx.dosage }}
+                        <p>{{ rx.frequency }} durante {{ rx.duration }}</p>
+                        @if (rx.specialInstructions) {
+                          <p class="instructions">Nota: {{ rx.specialInstructions }}</p>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+
+              @if (consulta.additionalNotes) {
+                <div class="notes-box">
+                  <h4>Notas adicionales:</h4>
+                  <p>{{ consulta.additionalNotes }}</p>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        @if (totalPages > 1) {
+          <div class="pagination">
+            <button [disabled]="currentPage === 0" (click)="loadHistory(currentPage - 1)">Anterior</button>
+            <span>Página {{ currentPage + 1 }} de {{ totalPages }}</span>
+            <button [disabled]="currentPage >= totalPages - 1" (click)="loadHistory(currentPage + 1)">Siguiente</button>
+          </div>
+        }
+      </section>
+
+    </div>
+  }
+
+</div>

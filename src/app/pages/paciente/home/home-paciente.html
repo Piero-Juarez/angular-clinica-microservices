@@ -1,0 +1,33 @@
+<div class="layout-wrapper">
+
+  <nav class="navbar">
+
+    <div class="nav-brand">
+      <h1>Clínica App</h1>
+      <span class="badge">Portal Paciente</span>
+    </div>
+
+    <div class="nav-links">
+      <a routerLink="/paciente/inicio" routerLinkActive="active">Inicio</a>
+      <a routerLink="/paciente/mis-citas" routerLinkActive="active">Mis Citas</a>
+      <a routerLink="/paciente/nueva-cita" routerLinkActive="active">Generar Nueva Cita</a>
+      <a routerLink="/paciente/historial" routerLinkActive="active">Historial Médico</a>
+    </div>
+
+    <div class="nav-actions">
+      <a routerLink="/paciente/cuenta" class="btn-account">
+        Mi Cuenta
+      </a>
+
+      <button class="btn-logout" (click)="cerrarSesion()">
+        Cerrar Sesión
+      </button>
+    </div>
+
+  </nav>
+
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+
+</div>

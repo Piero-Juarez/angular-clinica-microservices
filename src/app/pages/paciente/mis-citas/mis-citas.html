@@ -1,0 +1,169 @@
+<div class="appointments-container">
+
+  <header class="page-header">
+    <h1>Historial de Citas</h1>
+    <p>Revisa y gestiona todas tus reservas médicas.</p>
+
+    @if (!isLoading && totalElements > 0) {
+      <div class="stats-box">
+        <span>Total registradas: <strong>{{ totalElements }}</strong></span>
+      </div>
+    }
+  </header>
+
+  @if (isLoading) {
+    <div class="loading-state">
+      <p>Cargando tu historial...</p>
+    </div>
+  }
+
+  @if (!isLoading && appointments.length === 0) {
+    <div class="empty-state">
+      <div class="icon">📂</div>
+      <h2>No hay citas registradas</h2>
+      <p>Actualmente no tienes ninguna cita médica en tu historial.</p>
+    </div>
+  }
+
+  @if (!isLoading && appointments.length > 0) {
+    <div class="appointments-grid">
+
+      @for (cita of appointments; track cita.id) {
+        <div class="appointment-card">
+
+          <div class="card-header">
+            <span class="date">{{ cita.appointmentDate | date:'fullDate' }}</span>
+            <span class="badge" [ngClass]="cita.status.toLowerCase()">
+              {{ cita.status }}
+            </span>
+          </div>
+
+          <div class="card-body">
+            <div class="info-row">
+              <span class="label">Hora:</span>
+              <span class="value">{{ cita.appointmentTime }}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Médico Tratante:</span>
+              <span class="value doc-id">{{ doctorDictionary[cita.doctorId] || 'Cargando doctor...' }}</span>
+            </div>
+
+            @if (cita.notes) {
+              <div class="notes-box">
+                <span class="label">Mis notas:</span>
+                <p>{{ cita.notes }}</p>
+              </div>
+            }
+          </div>
+
+          <div class="card-footer">
+            <button class="btn btn-outline"
+                    [disabled]="cita.status === 'CANCELLED' || cita.status === 'COMPLETED'"
+                    (click)="abrirModalModificar(cita)">
+              Modificar Cita
+            </button>
+            <button class="btn btn-danger"
+                    [disabled]="cita.status === 'CANCELLED' || cita.status === 'COMPLETED'"
+                    (click)="abrirModalCancelar(cita.id)">
+              Cancelar Cita
+            </button>
+          </div>
+
+        </div>
+      }
+
+    </div>
+  }
+
+  @if (totalPages > 1 && !isLoading) {
+    <div class="pagination">
+      <button [disabled]="currentPage === 0" (click)="loadAppointments(currentPage - 1)">Anterior</button>
+      <span>Página {{ currentPage + 1 }} de {{ totalPages }}</span>
+      <button [disabled]="currentPage >= totalPages - 1" (click)="loadAppointments(currentPage + 1)">Siguiente</button>
+    </div>
+  }
+
+</div>
+
+<!-- MODALES -->
+@if (showCancelModal) {
+  <div class="modal-overlay">
+    <div class="modal-content warning-modal">
+      <h2>⚠ ¿Estás seguro de cancelar esta cita?</h2>
+      <p>El horario que escogiste quedará libre y <strong>otra persona podrá tomarlo</strong>. Si deseas atención médica, tendrás que volver a sacar una nueva cita en el futuro.</p>
+
+      <div class="modal-actions">
+        <button class="btn btn-outline" (click)="cerrarModalCancelar()" [disabled]="isCancelling">
+          No, mantener mi cita
+        </button>
+        <button class="btn btn-danger-solid" (click)="confirmarCancelacion()" [disabled]="isCancelling">
+          {{ isCancelling ? 'Cancelando...' : 'Sí, cancelar cita' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showUpdateModal) {
+  <div class="modal-overlay">
+    <div class="modal-content update-modal">
+      <div class="modal-header">
+        <h2>Modificar Cita Médica</h2>
+        <button class="close-btn" (click)="cerrarModalModificar()">✖</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>1. Selecciona nueva fecha:</label>
+          <input type="date"
+                 [(ngModel)]="updateData.appointmentDate"
+                 [min]="todayDate"
+                 (change)="cargarHorariosParaModificacion()">
+        </div>
+
+        @if (updateData.appointmentDate) {
+          <div class="form-group">
+            <label>2. Horarios Disponibles:</label>
+            @if (isLoadingTimes) {
+              <div>Buscando espacios libres...</div>
+            }
+            @if (!isLoadingTimes) {
+              <div class="times-grid">
+                @for (slot of availableUpdateTimes; track slot.time) {
+                  <button
+                    class="time-btn"
+                    [class.selected]="updateData.appointmentTime === slot.time"
+                    [disabled]="!slot.isAvailable && updateData.appointmentTime !== slot.time"
+                    (click)="seleccionarNuevaHora(slot.time)"
+                  >
+                    {{ slot.time }}
+                  </button>
+                }
+              </div>
+            }
+            @if (availableUpdateTimes.length === 0 && !isLoadingTimes) {
+              <p class="error-text">
+                No hay turnos disponibles para esta fecha.
+              </p>
+            }
+          </div>
+        }
+
+        @if (updateData.appointmentTime) {
+          <div class="form-group">
+            <label>3. Actualizar notas (Opcional):</label>
+            <textarea [(ngModel)]="updateData.notes" rows="2"></textarea>
+          </div>
+        }
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-black btn-block"
+                [disabled]="!updateData.appointmentTime || isUpdating"
+                (click)="confirmarModificacion()">
+          {{ isUpdating ? 'Guardando...' : 'Guardar Cambios' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

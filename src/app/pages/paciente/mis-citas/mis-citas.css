@@ -1,0 +1,268 @@
+.appointments-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #000;
+}
+
+.page-header {
+  border-bottom: 4px solid #000;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  h1 { font-size: 2.5rem; text-transform: uppercase; font-weight: 800; margin: 0; }
+  p { font-size: 1.1rem; color: #555; margin: 0; }
+
+  .stats-box {
+    margin-top: 1rem;
+    display: inline-block;
+    background: #000;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    font-weight: 700;
+    width: fit-content;
+  }
+}
+
+.empty-state {
+  border: 4px dashed #000;
+  padding: 4rem 2rem;
+  text-align: center;
+  background: #fcfcfc;
+
+  .icon { font-size: 4rem; margin-bottom: 1rem; }
+  h2 { font-size: 1.5rem; text-transform: uppercase; margin: 0 0 0.5rem 0; }
+}
+
+/* Grilla y Tarjetas */
+.appointments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.appointment-card {
+  border: 3px solid #000;
+  background: #fff;
+  box-shadow: 6px 6px 0 #000;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 10px 10px 0 #000;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid #000;
+    padding: 1rem;
+    background: #f5f5f5;
+
+    .date { font-weight: 800; text-transform: capitalize; }
+
+    /* COLORES DE LOS ESTADOS (Badges) */
+    .badge {
+      border: 2px solid #000;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      box-shadow: 2px 2px 0 #000;
+
+      &.pending { background-color: #ffe600; color: #000; } /* Amarillo vibrante */
+      &.confirmed { background-color: #00e676; color: #000; } /* Verde neón */
+      &.cancelled { background-color: #ff1744; color: #fff; } /* Rojo fuerte */
+      &.completed { background-color: #000000; color: #fff; } /* Negro total */
+    }
+  }
+
+  .card-body {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dashed #ccc;
+      padding-bottom: 0.4rem;
+
+      .label { font-weight: 700; color: #444; }
+      .value { font-weight: 800; text-align: right; }
+      .doc-id { font-family: monospace; font-size: 0.85rem; background: #eee; padding: 0.2rem; }
+    }
+
+    .notes-box {
+      margin-top: 1rem;
+      background: #f9f9f9;
+      border: 1px solid #000;
+      padding: 1rem;
+
+      .label { display: block; font-weight: 800; margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.85rem; }
+      p { margin: 0; font-size: 0.95rem; font-style: italic; color: #333; }
+    }
+  }
+
+  .card-footer {
+    display: flex;
+    border-top: 3px solid #000;
+
+    .btn {
+      flex: 1;
+      padding: 1rem;
+      border: none;
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s;
+
+      &:disabled {
+        background: #e0e0e0;
+        color: #999;
+        cursor: not-allowed;
+      }
+    }
+
+    .btn-outline {
+      background: #fff;
+      color: #000;
+      border-right: 3px solid #000;
+      &:hover:not(:disabled) { background: #eee; }
+    }
+
+    .btn-danger {
+      background: #fff;
+      color: #ff1744;
+      &:hover:not(:disabled) { background: #ff1744; color: #fff; }
+    }
+  }
+}
+
+.pagination {
+  display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 3rem;
+  button { padding: 0.8rem 1.5rem; border: 3px solid #000; background: #fff; font-weight: 800; text-transform: uppercase; cursor: pointer; box-shadow: 4px 4px 0 #000; }
+  button:active { transform: translate(4px, 4px); box-shadow: 0 0 0 #000; }
+  button:disabled { border-color: #ccc; color: #ccc; box-shadow: none; cursor: not-allowed; transform: none; }
+  span { font-weight: 800; }
+}
+
+/* ==========================================
+   ESTILOS DE MODALES (VENTANAS EMERGENTES)
+   ========================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(3px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  /* Animación simple de aparición */
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background: #ffffff;
+  border: 4px solid #000000;
+  box-shadow: 10px 10px 0 #000000;
+  padding: 2rem;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+}
+
+/* Modal de Cancelación (Warning) */
+.warning-modal {
+  text-align: center;
+
+  h2 { font-size: 1.5rem; color: #ff1744; text-transform: uppercase; font-weight: 800; margin-top: 0;}
+  p { font-size: 1.1rem; line-height: 1.5; margin-bottom: 2rem; }
+
+  .modal-actions {
+    display: flex;
+    gap: 1rem;
+
+    .btn { padding: 1rem; flex: 1; font-weight: 800; text-transform: uppercase; cursor: pointer; border: 3px solid #000; transition: all 0.2s;}
+    .btn-outline { background: #fff; color: #000; }
+    .btn-outline:hover { background: #eee; }
+
+    .btn-danger-solid { background: #ff1744; color: #fff; box-shadow: 4px 4px 0 #000;}
+    .btn-danger-solid:active:not(:disabled) { transform: translate(4px, 4px); box-shadow: 0 0 0 #000; }
+    .btn-danger-solid:disabled { background: #ccc; box-shadow: none; cursor: not-allowed;}
+  }
+}
+
+/* Modal de Actualización */
+.update-modal {
+  max-width: 600px;
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid #000;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+
+    h2 { margin: 0; font-size: 1.5rem; font-weight: 800; text-transform: uppercase;}
+    .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; font-weight: bold;}
+    .close-btn:hover { color: #ff1744; }
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+
+    label { font-weight: 800; text-transform: uppercase; }
+    input[type="date"], textarea {
+      padding: 0.8rem; border: 3px solid #000; font-family: inherit; font-size: 1rem; outline: none;
+    }
+    input[type="date"]:focus, textarea:focus { background: #f9f9f9; }
+  }
+
+  .times-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 0.5rem;
+
+    .time-btn {
+      padding: 0.6rem; border: 2px solid #000; background: #fff; font-weight: 700; cursor: pointer;
+      &:hover:not(:disabled) { background: #eee; }
+      &.selected { background: #000; color: #fff; }
+      &:disabled { border-color: #ccc; color: #ccc; text-decoration: line-through; cursor: not-allowed; }
+    }
+  }
+
+  .modal-footer {
+    margin-top: 2rem;
+    .btn-block {
+      width: 100%; background: #000; color: #fff; border: 3px solid #000; padding: 1rem;
+      font-weight: 800; text-transform: uppercase; font-size: 1.1rem; cursor: pointer;
+      box-shadow: 4px 4px 0 #000; transition: all 0.1s;
+
+      &:active:not(:disabled) { transform: translate(4px, 4px); box-shadow: 0 0 0 #000; }
+      &:disabled { background: #666; box-shadow: none; cursor: not-allowed; }
+    }
+  }
+}

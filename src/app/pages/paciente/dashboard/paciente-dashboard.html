@@ -1,0 +1,89 @@
+<div class="dashboard-container">
+
+  <header class="dashboard-header">
+    <h1>Hola, {{ patientProfile?.personData?.name || 'Cargando...' }}</h1>
+    <p>Bienvenido a tu portal de salud. Aquí tienes un resumen de tu actividad.</p>
+  </header>
+
+  <div class="dashboard-grid">
+
+    <section class="appointments-section">
+      <div class="section-title">
+        <h2>Mis Próximas Citas</h2>
+      </div>
+
+      @if (isLoadingAppointments) {
+        <div class="loading-state">
+          <p>Cargando información...</p>
+        </div>
+      }
+
+      @if (!isLoadingAppointments && appointments.length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">📅</div>
+          <h3>No tienes citas reservadas</h3>
+          <p>Actualmente no cuentas con ninguna cita médica programada en el sistema.</p>
+        </div>
+      }
+
+      @if (!isLoadingAppointments && appointments.length > 0) {
+        <div class="appointment-list">
+          @for (cita of appointments; track cita.id) {
+            <div class="appointment-card">
+              <div class="date-box">
+                <span class="day">{{ cita.appointmentDate | date:'dd' }}</span>
+                <span class="month">{{ cita.appointmentDate | date:'MMM' }}</span>
+              </div>
+              <div class="details-box">
+                <p><strong>Hora:</strong> {{ cita.appointmentTime }}</p>
+                <p><strong>Estado:</strong> <span class="status-badge">{{ cita.status }}</span></p>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <aside class="sidebar-section">
+
+      <div class="action-card highlight">
+        <h3>¿Necesitas atención médica?</h3>
+        <p>Sacar una cita es muy fácil y rápido. Elige la especialidad y el horario que mejor se adapten a ti.</p>
+        <a routerLink="/paciente/nueva-cita" class="btn-primary">Sacar Cita Aquí</a>
+      </div>
+
+      @if (patientProfile && !isLoadingProfile) {
+        <div class="action-card info-card">
+          <h3>Mi Información</h3>
+
+          <div class="info-row">
+            <span class="label">Paciente:</span>
+            <span class="value">{{ patientProfile.personData.name }} {{ patientProfile.personData.lastName }}</span>
+          </div>
+
+          <div class="info-row">
+            <span class="label">{{ patientProfile.personData.documentType }}:</span>
+            <span class="value">{{ patientProfile.personData.documentNumber }}</span>
+          </div>
+
+          <div class="info-row">
+            <span class="label">Tipo de Sangre:</span>
+            <span class="value">{{ patientProfile.bloodType || 'No registrado' }}</span>
+          </div>
+
+          <div class="info-row">
+            <span class="label">Seguro de Salud:</span>
+            <span class="value">{{ patientProfile.healthInsurance || 'Particular' }}</span>
+          </div>
+
+          <div class="info-row contact-emergency">
+            <span class="label">Contacto de Emergencia:</span>
+            <span class="value">{{ patientProfile.emergencyContactName }} <br> ({{ patientProfile.emergencyContactPhone }})</span>
+          </div>
+        </div>
+      }
+
+    </aside>
+
+  </div>
+</div>
