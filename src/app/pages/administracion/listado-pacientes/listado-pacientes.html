@@ -1,0 +1,185 @@
+<div class="page-container">
+
+  <header class="page-header">
+    <div class="header-titles">
+      <h1>Directorio de Pacientes</h1>
+      <p>Gestiona los pacientes registrados en la clínica.</p>
+    </div>
+    @if (!isLoading) {
+      <div class="stats-badge">
+        Total Registrados: <strong>{{ totalElements }}</strong>
+      </div>
+    }
+  </header>
+
+  <div class="search-section">
+    <div class="search-box">
+      <span class="icon">🔍</span>
+      <input type="text"
+             [(ngModel)]="documentSearch"
+             placeholder="Buscar por N° de Documento (Ej. 73400187)..."
+             (keyup.enter)="onSearch()">
+      @if (documentSearch) {
+        <button class="btn-clear" (click)="limpiarFiltro()">✖</button>
+      }
+    </div>
+    <button class="btn-black" (click)="onSearch()">Buscar</button>
+  </div>
+
+  @if (isLoading) {
+    <div class="loading-state">Cargando base de datos de pacientes...</div>
+  }
+
+  @if (!isLoading && patients.length === 0) {
+    <div class="empty-state">
+      <h2>No hay pacientes registrados</h2>
+    </div>
+  }
+
+  @if (!isLoading && patients.length > 0) {
+    <div class="patients-grid">
+      @for (paciente of patients; track paciente.id) {
+        <div class="patient-card">
+
+          <div class="card-header">
+            <h3>{{ paciente.personData.name }} {{ paciente.personData.lastName }}</h3>
+            @if (paciente.bloodType) {
+              <span class="blood-badge">{{ paciente.bloodType }}</span>
+            }
+          </div>
+
+          <div class="card-body">
+            <p><strong>{{ paciente.personData.documentType }}:</strong> {{ paciente.personData.documentNumber }}</p>
+            <p><strong>Correo:</strong> {{ paciente.personData.email }}</p>
+            <p><strong>Celular:</strong> {{ paciente.personData.phone || 'N/A' }}</p>
+            <p><strong>Seguro:</strong> {{ paciente.healthInsurance || 'Particular' }}</p>
+            <p class="id-text">ID: {{ paciente.id.substring(0, 8) }}...</p>
+          </div>
+
+          <div class="card-footer">
+            <button class="btn-outline" (click)="abrirModalPerfil(paciente)">Ver Perfil</button>
+            <button class="btn-danger" (click)="abrirModalDeshabilitar(paciente.id)">Deshabilitar</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (totalPages > 1 && !isLoading) {
+    <div class="pagination">
+      <button [disabled]="currentPage === 0" (click)="loadPatients(currentPage - 1)">Anterior</button>
+      <span>Página {{ currentPage + 1 }} de {{ totalPages }}</span>
+      <button [disabled]="currentPage >= totalPages - 1" (click)="loadPatients(currentPage + 1)">Siguiente</button>
+    </div>
+  }
+
+  @if (showProfileModal) {
+    <div class="modal-overlay">
+      <div class="modal-content profile-modal">
+        <div class="modal-header">
+          <h2>Ficha del Paciente</h2>
+          <button class="close-btn" (click)="cerrarModalPerfil()">✖</button>
+        </div>
+
+        @if (selectedPatientProfile) {
+          <div class="modal-body scrollable">
+
+            <div class="profile-section">
+              <h3>Datos Personales</h3>
+              <div class="info-grid">
+                <div class="data-group">
+                  <span class="label">Nombres y Apellidos:</span>
+                  <span class="value">{{ selectedPatientProfile.personData.name }} {{ selectedPatientProfile.personData.lastName }}</span>
+                </div>
+                <div class="data-group">
+                  <span class="label">{{ selectedPatientProfile.personData.documentType }}:</span>
+                  <span class="value">{{ selectedPatientProfile.personData.documentNumber }}</span>
+                </div>
+                <div class="data-group">
+                  <span class="label">Fecha Nacimiento:</span>
+                  <span class="value">{{ selectedPatientProfile.personData.birthDate }}</span>
+                </div>
+                <div class="data-group">
+                  <span class="label">Sexo:</span>
+                  <span class="value">{{ selectedPatientProfile.personData.biologicalSex }}</span>
+                </div>
+                <div class="data-group">
+                  <span class="label">Estado Civil:</span>
+                  <span class="value">{{ selectedPatientProfile.maritalStatus || 'N/A' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="profile-section">
+              <h3>Contacto y Residencia</h3>
+              <div class="info-grid">
+                <div class="data-group">
+                  <span class="label">Celular:</span>
+                  <span class="value">{{ selectedPatientProfile.personData.phone || 'N/A' }}</span>
+                </div>
+                <div class="data-group">
+                  <span class="label">Correo Electrónico:</span>
+                  <span class="value">{{ selectedPatientProfile.personData.email }}</span>
+                </div>
+                <div class="data-group full-width">
+                  <span class="label">Dirección:</span>
+                  <span class="value">{{ selectedPatientProfile.personData.address || 'No registrada' }} (Ubigeo: {{ selectedPatientProfile.personData.ubigeo || 'N/A' }})</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="profile-section highlight-section">
+              <h3>Información Médica</h3>
+              <div class="info-grid">
+                <div class="data-group">
+                  <span class="label">Tipo de Sangre:</span>
+                  <span class="value blood">{{ selectedPatientProfile.bloodType || 'Desconocido' }}</span>
+                </div>
+                <div class="data-group">
+                  <span class="label">Seguro / Póliza:</span>
+                  <span class="value">{{ selectedPatientProfile.healthInsurance || 'Particular' }} <br> <small>{{ selectedPatientProfile.policyNumber || '' }}</small></span>
+                </div>
+                <div class="data-group full-width emergency-contact">
+                  <span class="label">Contacto de Emergencia:</span>
+                  <span class="value">
+                    {{ selectedPatientProfile.emergencyContactName || 'No registrado' }}
+                    @if (selectedPatientProfile.emergencyContactRelation) {
+                      <span>({{ selectedPatientProfile.emergencyContactRelation }})</span>
+                    }
+                    @if (selectedPatientProfile.emergencyContactPhone) {
+                      <span>- Telf: {{ selectedPatientProfile.emergencyContactPhone }}</span>
+                    }
+                  </span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  @if (showModal) {
+    <div class="modal-overlay">
+      <div class="modal-content warning-modal">
+        <div class="warning-icon">⚠</div>
+        <h2>¿Deshabilitar Paciente?</h2>
+        <p>
+          Estás a punto de deshabilitar a este paciente del sistema. <br><br>
+          <strong>No te preocupes, sus datos clínicos y citas históricas no se borrarán de la base de datos</strong>, y puedes volver a habilitar su cuenta en el futuro si lo requiere.
+        </p>
+
+        <div class="modal-actions">
+          <button class="btn-cancel" (click)="cerrarModal()" [disabled]="isDisabling">
+            Cancelar
+          </button>
+          <button class="btn-confirm" (click)="confirmarDeshabilitacion()" [disabled]="isDisabling">
+            {{ isDisabling ? 'Procesando...' : 'Sí, Deshabilitar' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

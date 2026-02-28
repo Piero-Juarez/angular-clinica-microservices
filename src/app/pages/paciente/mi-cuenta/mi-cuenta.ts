@@ -47,7 +47,7 @@ export class MiCuentaPaciente implements OnInit {
     if (!userId) return
 
     this.isLoading = true
-    this.personApiService.getPatientProfile(userId).subscribe({
+    this.personApiService.getPatientById(userId).subscribe({
       next: (res) => {
         if (res.success && res.data) {
           this.patientProfile = res.data
@@ -56,7 +56,7 @@ export class MiCuentaPaciente implements OnInit {
         this.cdr.detectChanges()
       },
       error: (err) => {
-        console.error('Error cargando perfil', err)
+        console.error()
         this.isLoading = false
         this.cdr.detectChanges()
       }

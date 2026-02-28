@@ -78,7 +78,7 @@ export class MisCitasPaciente implements OnInit {
         this.cdr.detectChanges()
       },
       error: (err) => {
-        console.error('Error al cargar las citas', err)
+        console.error()
         this.isLoading = false
         this.cdr.detectChanges()
       }
@@ -109,7 +109,7 @@ export class MisCitasPaciente implements OnInit {
         this.cdr.detectChanges()
       },
       error: (err) => {
-        console.error('Error cargando nombres de doctores', err)
+        console.error()
         this.isLoading = false
         this.cdr.detectChanges()
       }
@@ -223,7 +223,7 @@ export class MisCitasPaciente implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error al cancelar', err);
+        console.error();
         this.isCancelling = false;
         alert('Ocurrió un error al intentar cancelar la cita.');
         this.cdr.detectChanges();

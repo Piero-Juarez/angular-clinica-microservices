@@ -1,0 +1,161 @@
+<div class="page-container">
+
+  <header class="page-header">
+    <div class="header-titles">
+      <h1>Gestión Global de Citas</h1>
+      <p>Administra, reprograma o cancela las reservas de los pacientes.</p>
+    </div>
+    @if (!isLoading) {
+      <div class="stats-badge">
+        Total Citas: <strong>{{ totalElements }}</strong>
+      </div>
+    }
+  </header>
+
+  @if (isLoading) {
+    <div class="loading-state">Cargando base de datos de citas...</div>
+  }
+
+  @if (!isLoading && appointments.length === 0) {
+    <div class="empty-state">
+      <h2>No hay citas registradas en el sistema</h2>
+    </div>
+  }
+
+  @if (!isLoading && appointments.length > 0) {
+    <div class="appointments-grid">
+      @for (cita of appointments; track cita.id) {
+        <div class="appointment-card">
+
+          <div class="card-header">
+            <span class="date">{{ cita.appointmentDate | date:'fullDate' }}</span>
+            <span class="badge" [ngClass]="cita.status.toLowerCase()">{{ cita.status }}</span>
+          </div>
+
+          <div class="card-body">
+            <div class="time-row">
+              <span class="time">{{ cita.appointmentTime }}</span>
+            </div>
+
+            <div class="people-info">
+              <p><strong>Paciente:</strong> {{ patientDictionary[cita.patientId] || 'Cargando...' }}</p>
+              <p><strong>Médico:</strong> {{ doctorDictionary[cita.doctorId] || 'Cargando...' }}</p>
+            </div>
+
+            @if (cita.notes) {
+              <div class="notes-box">
+                <p><em>"{{ cita.notes }}"</em></p>
+              </div>
+            }
+            <p class="id-text">ID: {{ cita.id.substring(0, 8) }}...</p>
+          </div>
+
+          <div class="card-footer">
+            <button class="btn-outline"
+                    [disabled]="cita.status === 'CANCELLED' || cita.status === 'COMPLETED'"
+                    (click)="abrirModalModificar(cita)">
+              Reprogramar
+            </button>
+            <button class="btn-danger"
+                    [disabled]="cita.status === 'CANCELLED' || cita.status === 'COMPLETED'"
+                    (click)="abrirModalCancelar(cita)">
+              Cancelar
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (totalPages > 1 && !isLoading) {
+    <div class="pagination">
+      <button [disabled]="currentPage === 0" (click)="loadAppointments(currentPage - 1)">Anterior</button>
+      <span>Página {{ currentPage + 1 }} de {{ totalPages }}</span>
+      <button [disabled]="currentPage >= totalPages - 1" (click)="loadAppointments(currentPage + 1)">Siguiente</button>
+    </div>
+  }
+
+  @if (showCancelModal) {
+    <div class="modal-overlay">
+      <div class="modal-content warning-modal">
+        <div class="warning-icon">⚠</div>
+        <h2>¿Forzar Cancelación?</h2>
+        <p>Estás a punto de cancelar la cita del paciente <strong>{{ patientDictionary[selectedAppointment?.patientId || ''] }}</strong>. El espacio del médico quedará liberado inmediatamente.</p>
+
+        <div class="modal-actions">
+          <button class="btn-cancel" (click)="showCancelModal = false" [disabled]="isProcessing">Atrás</button>
+          <button class="btn-confirm" (click)="confirmarCancelacion()" [disabled]="isProcessing">
+            {{ isProcessing ? 'Cancelando...' : 'Sí, Cancelar Cita' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (showUpdateModal) {
+    <div class="modal-overlay">
+      <div class="modal-content update-modal">
+        <div class="modal-header">
+          <h2>Reprogramar Cita</h2>
+          <button class="close-btn" (click)="showUpdateModal = false">✖</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="admin-notice">
+            Reprogramando a: <strong>{{ patientDictionary[selectedAppointment?.patientId || ''] }}</strong><br>
+            Con: <strong>{{ doctorDictionary[selectedAppointment?.doctorId || ''] }}</strong>
+          </div>
+
+          <div class="form-group">
+            <label>1. Nueva Fecha:</label>
+            <input type="date" [(ngModel)]="updateData.appointmentDate" [min]="todayDate" (change)="cargarHorariosDisponibles()">
+          </div>
+
+          @if (updateData.appointmentDate) {
+            <div class="form-group">
+              <label>2. Horarios del Médico:</label>
+              @if (isLoadingTimes) {
+                <div>Sincronizando agenda...</div>
+              }
+
+              @if (!isLoadingTimes) {
+                <div class="times-grid">
+                  @for (slot of availableUpdateTimes; track slot.time) {
+                    <button
+                      class="time-btn"
+                      [class.selected]="updateData.appointmentTime === slot.time"
+                      [disabled]="!slot.isAvailable && updateData.appointmentTime !== slot.time"
+                      (click)="seleccionarNuevaHora(slot.time)"
+                    >
+                      {{ slot.time }}
+                    </button>
+                  }
+                </div>
+              }
+
+              @if (availableUpdateTimes.length === 0 && !isLoadingTimes) {
+                <p class="error-text">Sin turnos para esta fecha.</p>
+              }
+            </div>
+          }
+
+          @if (updateData.appointmentTime) {
+            <div class="form-group">
+              <label>3. Notas administrativas:</label>
+              <textarea [(ngModel)]="updateData.notes" rows="2"></textarea>
+            </div>
+          }
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-black btn-block"
+                  [disabled]="!updateData.appointmentTime || isProcessing"
+                  (click)="confirmarModificacion()">
+            {{ isProcessing ? 'Guardando...' : 'Confirmar Reprogramación' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

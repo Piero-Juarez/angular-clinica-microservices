@@ -1,0 +1,130 @@
+<div class="page-container">
+
+  <header class="page-header">
+    <div class="header-titles">
+      <h1>Staff Médico</h1>
+      <p>Gestiona a los profesionales de la salud registrados.</p>
+    </div>
+    @if (!isLoading) {
+      <div class="stats-badge">
+        Total Registrados: <strong>{{ totalElements }}</strong>
+      </div>
+    }
+  </header>
+
+  <div class="filters-container">
+
+    <div class="search-box">
+      <span class="icon">🔍</span>
+      <input type="text"
+             [(ngModel)]="specialtySearch"
+             placeholder="Filtrar por especialidad (Ej. Cardiología)..."
+             (keyup.enter)="onSearch()"
+             [disabled]="searchCredentialValue.length > 0">
+    </div>
+
+    <div class="search-box credential-box">
+      <select [(ngModel)]="searchCredentialType">
+        <option value="CMP">CMP</option>
+        <option value="RNE">RNE</option>
+      </select>
+      <input type="text"
+             [(ngModel)]="searchCredentialValue"
+             placeholder="N° de credencial..."
+             (keyup.enter)="onSearch()">
+    </div>
+
+    <div class="filter-actions">
+      @if (specialtySearch || searchCredentialValue) {
+        <button class="btn-clear-all" (click)="limpiarFiltros()">Limpiar</button>
+      }
+      <button class="btn-black" (click)="onSearch()">Buscar</button>
+    </div>
+  </div>
+
+  @if (isLoading) {
+    <div class="loading-state">Cargando base de datos de médicos...</div>
+  }
+
+  @if (!isLoading && doctors.length === 0) {
+    <div class="empty-state">
+      <h2>{{ searchError ? 'Búsqueda sin resultados' : 'No se encontraron médicos' }}</h2>
+      @if (searchError) {
+        <p class="error-text">{{ searchError }}</p>
+      }
+      @if (specialtySearch && !searchError) {
+        <p>No hay profesionales registrados con la especialidad "{{ specialtySearch }}".</p>
+      }
+      @if (searchError || specialtySearch) {
+        <button class="btn-outline" style="margin-top: 1rem;" (click)="limpiarFiltros()">Volver al listado completo</button>
+      }
+    </div>
+  }
+
+  @if (!isLoading && doctors.length > 0) {
+    <div class="doctors-grid">
+      @for (doctor of doctors; track doctor.id) {
+        <div class="doctor-card">
+
+          <div class="card-header">
+            <div class="doc-title">
+              <h3>Dr(a). {{ doctor.personData.name }} {{ doctor.personData.lastName }}</h3>
+              <span class="specialty-badge">{{ doctor.mainSpecialty }}</span>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="info-row">
+              <span><strong>CMP:</strong> {{ doctor.cmp }}</span>
+              <span><strong>RNE:</strong> {{ doctor.rne || 'N/A' }}</span>
+            </div>
+            <p><strong>Experiencia:</strong> {{ doctor.yearsOfExperience }} años</p>
+            <p><strong>Correo:</strong> {{ doctor.personData.email }}</p>
+            <p><strong>Celular:</strong> {{ doctor.personData.phone || 'N/A' }}</p>
+
+            @if (doctor.publicBiography) {
+              <div class="bio-box">
+                <p class="bio">{{ doctor.publicBiography }}</p>
+              </div>
+            }
+
+            <p class="id-text">ID: {{ doctor.id.substring(0, 8) }}...</p>
+          </div>
+
+          <div class="card-footer">
+            <button class="btn-danger" (click)="abrirModalDeshabilitar(doctor.id)">Deshabilitar</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (totalPages > 1 && !isLoading) {
+    <div class="pagination">
+      <button [disabled]="currentPage === 0" (click)="loadDoctors(currentPage - 1)">Anterior</button>
+      <span>Página {{ currentPage + 1 }} de {{ totalPages }}</span>
+      <button [disabled]="currentPage >= totalPages - 1" (click)="loadDoctors(currentPage + 1)">Siguiente</button>
+    </div>
+  }
+
+  @if (showModal) {
+    <div class="modal-overlay">
+      <div class="modal-content warning-modal">
+        <div class="warning-icon">⚠</div>
+        <h2>¿Deshabilitar Médico?</h2>
+        <p>
+          Estás a punto de deshabilitar a este médico del sistema. <br><br>
+          <strong>Su historial de atenciones y consultas previas se mantendrá intacto</strong>, pero ya no aparecerá disponible para que los pacientes reserven nuevas citas con él. Podrás reactivarlo en el futuro.
+        </p>
+
+        <div class="modal-actions">
+          <button class="btn-cancel" (click)="cerrarModal()" [disabled]="isDisabling">Cancelar</button>
+          <button class="btn-confirm" (click)="confirmarDeshabilitacion()" [disabled]="isDisabling">
+            {{ isDisabling ? 'Procesando...' : 'Sí, Deshabilitar' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

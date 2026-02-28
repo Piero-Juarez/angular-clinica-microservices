@@ -1,0 +1,75 @@
+.page-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #000;
+}
+
+.page-header {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  border-bottom: 4px solid #000; margin-bottom: 2.5rem; padding-bottom: 1rem;
+
+  .header-titles h1 { font-size: 2.5rem; text-transform: uppercase; font-weight: 800; margin: 0; }
+  .header-titles p { font-size: 1.1rem; color: #555; margin: 0.5rem 0 0 0; }
+
+  .stats-badge { background: #000; color: #fff; padding: 0.8rem 1.5rem; font-weight: 700; text-transform: uppercase; box-shadow: 4px 4px 0 #ccc; }
+  @media (max-width: 768px) { flex-direction: column; align-items: flex-start; gap: 1rem; }
+}
+
+/* --- TARJETAS DE ADMINISTRADORES --- */
+.admins-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem;
+}
+
+.admin-card {
+  border: 4px solid #000; background: #fff; box-shadow: 6px 6px 0 #000;
+  display: flex; flex-direction: column; transition: transform 0.2s;
+  &:hover { transform: translateY(-4px); box-shadow: 8px 8px 0 #000; }
+
+  .card-header {
+    background: #f3e8ff; /* Tono púrpura suave para personal interno/management */
+    border-bottom: 3px solid #000; padding: 1.5rem;
+
+    .admin-title {
+      display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-start;
+      h3 { margin: 0; font-size: 1.25rem; font-weight: 900; text-transform: uppercase; line-height: 1.1;}
+      .role-badge { background: #ffe600; color: #000; padding: 0.3rem 0.6rem; font-weight: 800; font-size: 0.85rem; border: 2px solid #000; text-transform: uppercase;}
+    }
+  }
+
+  .card-body {
+    padding: 1.5rem; flex: 1; display: flex; flex-direction: column; gap: 0.5rem;
+
+    .highlight-row { background: #000; color: #fff; padding: 0.5rem; border: 2px solid #000; margin-bottom: 0.5rem; font-family: monospace; font-size: 1rem;}
+    p { margin: 0; font-size: 0.95rem; }
+
+    .id-text { margin-top: auto; padding-top: 1rem; font-family: monospace; font-size: 0.8rem; color: #888;}
+  }
+
+  .card-footer {
+    display: flex; border-top: 3px solid #000;
+    button { flex: 1; padding: 1rem; font-weight: 800; text-transform: uppercase; cursor: pointer; border: none; transition: background 0.15s;}
+    .btn-outline { background: #fff; color: #000; border-right: 3px solid #000; &:hover { background: #eee; } }
+    .btn-danger { background: #fff; color: #ff1744; &:hover { background: #ff1744; color: #fff; } }
+  }
+}
+
+/* --- PAGINACIÓN Y MODAL --- */
+.pagination { display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 3rem; }
+.pagination button { padding: 0.8rem 1.5rem; border: 3px solid #000; background: #fff; font-weight: 800; text-transform: uppercase; cursor: pointer; box-shadow: 4px 4px 0 #000; }
+.pagination button:active { transform: translate(4px, 4px); box-shadow: 0 0 0 #000; }
+.pagination button:disabled { border-color: #ccc; color: #ccc; box-shadow: none; cursor: not-allowed; transform: none; }
+.pagination span { font-weight: 800; background: #000; color: #fff; padding: 0.5rem 1rem; }
+
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(3px); display: flex; justify-content: center; align-items: center; z-index: 1000; animation: fadeIn 0.2s ease-out; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.warning-modal { background: #ffffff; border: 4px solid #000; box-shadow: 12px 12px 0 #000; padding: 2.5rem; width: 90%; max-width: 500px; text-align: center; }
+.warning-modal .warning-icon { font-size: 4rem; margin-bottom: 1rem; line-height: 1; }
+.warning-modal h2 { font-size: 1.8rem; color: #ff1744; text-transform: uppercase; font-weight: 900; margin: 0 0 1rem 0; }
+.warning-modal p { font-size: 1.1rem; line-height: 1.5; color: #333; margin-bottom: 2rem; }
+.modal-actions { display: flex; gap: 1rem; }
+.modal-actions button { padding: 1rem; flex: 1; font-weight: 800; text-transform: uppercase; cursor: pointer; border: 3px solid #000; transition: transform 0.1s, box-shadow 0.1s;}
+.modal-actions button:active:not(:disabled) { transform: translate(4px, 4px); box-shadow: 0 0 0 #000; }
+.btn-cancel { background: #fff; color: #000; box-shadow: 4px 4px 0 #000; &:hover { background: #eee; } }
+.btn-confirm { background: #ff1744; color: #fff; box-shadow: 4px 4px 0 #000; }
+.btn-confirm:disabled, .btn-cancel:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }

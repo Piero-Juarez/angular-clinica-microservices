@@ -44,7 +44,7 @@ export class HistorialMedicoPaciente implements OnInit {
         this.loadDoctorsForHistory();
       },
       error: (err) => {
-        console.error('Error cargando historial', err);
+        console.error();
         this.errorMessage = 'No se pudo cargar tu historial médico.';
         this.isLoading = false;
         this.cdr.detectChanges();

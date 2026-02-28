@@ -34,7 +34,7 @@ export class AuthService {
       const payload = token.split('.')[1]
       return JSON.parse(atob(payload))
     } catch (e) {
-      console.error('Error al decodificar el token:', e)
+      console.error()
       return null;
     }
   }

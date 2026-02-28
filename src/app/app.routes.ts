@@ -10,6 +10,11 @@ import {NuevaCitaPaciente} from './pages/paciente/nueva-cita/nueva-cita';
 import {MisCitasPaciente} from './pages/paciente/mis-citas/mis-citas';
 import {HistorialMedicoPaciente} from './pages/paciente/historial-medico/historial-medico';
 import {MiCuentaPaciente} from './pages/paciente/mi-cuenta/mi-cuenta';
+import {AdministracionDashboard} from './pages/administracion/dashboard/administracion-dashboard';
+import {ListadoPacientes} from './pages/administracion/listado-pacientes/listado-pacientes';
+import {ListadoMedicos} from './pages/administracion/listado-medicos/listado-medicos';
+import {ListadoAdministracion} from './pages/administracion/listado-administracion/listado-administracion';
+import {ListadoCitas} from './pages/administracion/listado-citas/listado-citas';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -49,7 +54,13 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { roles: ['ADMINISTRATION'] },
     children: [
+      { path: '', redirectTo: 'inicio', pathMatch: 'full' },
 
+      { path: 'inicio', component: AdministracionDashboard },
+      { path: 'pacientes', component: ListadoPacientes },
+      { path: 'medicos', component: ListadoMedicos },
+      { path: 'personal', component: ListadoAdministracion },
+      { path: 'citas', component: ListadoCitas }
     ]
   },
 

@@ -17,6 +17,10 @@ export class AppointmentApiService {
   private httpClient = inject(HttpClient)
   private apiUrl = environment.apiGatewayUrl + environment.pathAppointment
 
+  getAllAppointmentsAdministration(page: number = 0, size: number = 10): Observable<GenericResponse<PaginatedResponse<Appointment>>> {
+    return this.httpClient.get<GenericResponse<PaginatedResponse<Appointment>>>(`${this.apiUrl}/search/administration/all?page=${page}&size=${size}`)
+  }
+
   getMyAppointmentsPatient(page: number = 0, size: number = 10): Observable<GenericResponse<PaginatedResponse<Appointment>>> {
     return this.httpClient.get<GenericResponse<PaginatedResponse<Appointment>>>(`${this.apiUrl}/search/patient/me?page=${page}&size=${size}`)
   }
@@ -35,8 +39,16 @@ export class AppointmentApiService {
     return this.httpClient.put<GenericResponse>(`${this.apiUrl}/update/patient/me/${appointmentId}`, request)
   }
 
+  updateAppointmentAdministration(appointmentId: string, request: UpdateAppointmentRequest): Observable<GenericResponse> {
+    return this.httpClient.put<GenericResponse>(`${this.apiUrl}/update/for-patient/${appointmentId}`, request);
+  }
+
   cancelAppointmentPatient(appointmentId: string): Observable<GenericResponse> {
     return this.httpClient.patch<GenericResponse>(`${this.apiUrl}/cancel/patient/me/${appointmentId}`, {})
+  }
+
+  cancelAppointmentAdministration(appointmentId: string): Observable<GenericResponse> {
+    return this.httpClient.patch<GenericResponse>(`${this.apiUrl}/cancel/for-patient/${appointmentId}`, {})
   }
 
 }

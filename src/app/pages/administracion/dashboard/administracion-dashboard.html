@@ -1,0 +1,107 @@
+<div class="admin-dashboard">
+
+  <header class="dashboard-header">
+    <div class="header-content">
+      <div class="welcome-text">
+        <h1>Panel de Control</h1>
+        <p>Bienvenido(a), <strong>{{ adminProfile?.personData?.name }} {{ adminProfile?.personData?.lastName }}</strong>. Aquí tienes el resumen general.</p>
+      </div>
+
+      @if (adminProfile) {
+        <div class="admin-badges">
+          <div class="badge code-badge">
+            <span class="label">CÓDIGO:</span> {{ adminProfile.employeeCode }}
+          </div>
+        </div>
+      }
+    </div>
+  </header>
+
+  @if (isLoading) {
+    <div class="loading-state">Recopilando métricas...</div>
+  }
+
+  @if (!isLoading) {
+    <div>
+      <section class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon">👥</div>
+          <div class="kpi-info">
+            <h3>Total Pacientes</h3>
+            <span class="kpi-number">{{ totalPatients }}</span>
+          </div>
+        </div>
+
+        <div class="kpi-card highlight">
+          <div class="kpi-icon">🩺</div>
+          <div class="kpi-info">
+            <h3>Médicos Activos</h3>
+            <span class="kpi-number">{{ totalDoctors }}</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon">📅</div>
+          <div class="kpi-info">
+            <h3>Citas Globales</h3>
+            <span class="kpi-number">{{ totalAppointments }}</span>
+          </div>
+        </div>
+      </section>
+
+      <div class="dashboard-split">
+
+        <section class="recent-activity">
+          <div class="section-title">
+            <h2>Últimas Citas Registradas</h2>
+            <a class="view-all">Ver todas</a>
+          </div>
+
+          @if (recentAppointments.length === 0) {
+            <div class="empty-state">
+              No hay citas registradas en el sistema.
+            </div>
+          }
+
+          @if (recentAppointments.length > 0) {
+            <div class="activity-list">
+              @for (cita of recentAppointments; track cita.id) {
+                <div class="activity-card">
+                  <div class="date-badge">
+                    <span class="day">{{ cita.appointmentDate | date:'dd' }}</span>
+                    <span class="month">{{ cita.appointmentDate | date:'MMM' }}</span>
+                  </div>
+                  <div class="activity-details">
+                    <p>Hora: {{ cita.appointmentTime }} | Estado: <strong>{{ cita.status }}</strong></p>
+                    <p class="id-text">ID Cita: {{ cita.id.substring(0,8) }}...</p>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </section>
+
+        <aside class="quick-actions">
+          <h2>Acciones Rápidas</h2>
+
+          <button class="action-btn">
+            <span class="icon">➕</span>
+            <span>Registrar Nuevo Paciente</span>
+          </button>
+
+          <button class="action-btn">
+            <span class="icon">👨‍⚕️</span>
+            <span>Registrar Nuevo Médico</span>
+          </button>
+
+          <button class="action-btn outline">
+            <span class="icon">📅</span>
+            <span>Crear Nueva Cita</span>
+          </button>
+        </aside>
+
+      </div>
+    </div>
+  }
+
+</div>

@@ -1,0 +1,83 @@
+<div class="page-container">
+
+  <header class="page-header">
+    <div class="header-titles">
+      <h1>Staff Administrativo</h1>
+      <p>Gestiona los accesos y perfiles del personal de administración.</p>
+    </div>
+    @if (!isLoading) {
+      <div class="stats-badge">
+        Total Registrados: <strong>{{ totalElements }}</strong>
+      </div>
+    }
+  </header>
+
+  @if (isLoading) {
+    <div class="loading-state">Cargando base de datos del personal...</div>
+  }
+
+  @if (!isLoading && admins.length === 0) {
+    <div class="empty-state">
+      <h2>No hay personal administrativo registrado</h2>
+    </div>
+  }
+
+  @if (!isLoading && admins.length > 0) {
+    <div class="admins-grid">
+      @for (admin of admins; track admin.id) {
+        <div class="admin-card">
+
+          <div class="card-header">
+            <div class="admin-title">
+              <h3>{{ admin.personData.name }} {{ admin.personData.lastName }}</h3>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="info-row highlight-row">
+              <span><strong>CÓDIGO:</strong> {{ admin.employeeCode }}</span>
+            </div>
+            <p><strong>{{ admin.personData.documentType }}:</strong> {{ admin.personData.documentNumber }}</p>
+            <p><strong>Correo:</strong> {{ admin.personData.email }}</p>
+            <p><strong>Celular:</strong> {{ admin.personData.phone || 'N/A' }}</p>
+
+            <p class="id-text">UUID: {{ admin.id.substring(0, 8) }}...</p>
+          </div>
+
+          <div class="card-footer">
+            <button class="btn-danger" (click)="abrirModalDeshabilitar(admin.id)">Deshabilitar</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (totalPages > 1 && !isLoading) {
+    <div class="pagination">
+      <button [disabled]="currentPage === 0" (click)="loadAdmins(currentPage - 1)">Anterior</button>
+      <span>Página {{ currentPage + 1 }} de {{ totalPages }}</span>
+      <button [disabled]="currentPage >= totalPages - 1" (click)="loadAdmins(currentPage + 1)">Siguiente</button>
+    </div>
+  }
+
+  @if (showModal) {
+    <div class="modal-overlay">
+      <div class="modal-content warning-modal">
+        <div class="warning-icon">⚠</div>
+        <h2>¿Deshabilitar Administrador?</h2>
+        <p>
+          Estás a punto de revocar el acceso de este usuario administrativo. <br><br>
+          <strong>Esta acción impedirá que inicie sesión y gestione el sistema</strong>. Podrás reactivar su cuenta posteriormente si hubo algún error.
+        </p>
+
+        <div class="modal-actions">
+          <button class="btn-cancel" (click)="cerrarModal()" [disabled]="isDisabling">Cancelar</button>
+          <button class="btn-confirm" (click)="confirmarDeshabilitacion()" [disabled]="isDisabling">
+            {{ isDisabling ? 'Procesando...' : 'Sí, Deshabilitar' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

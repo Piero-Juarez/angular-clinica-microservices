@@ -44,7 +44,7 @@ export class PacienteDashboard implements OnInit {
     }
 
     // Cargar Perfil
-    this.personApiService.getPatientProfile(userUuid).subscribe({
+    this.personApiService.getPatientById(userUuid).subscribe({
       next: (response) => {
         if (response.success && response.data) {
           this.patientProfile = response.data
@@ -53,7 +53,7 @@ export class PacienteDashboard implements OnInit {
         this.cdr.detectChanges()
       },
       error: (err) => {
-        console.error('Error al cargar el perfil del paciente:', err)
+        console.error()
         this.isLoadingProfile = false
         this.cdr.detectChanges()
       }
@@ -69,7 +69,7 @@ export class PacienteDashboard implements OnInit {
         this.cdr.detectChanges()
       },
       error: (err) => {
-        console.error('Error al cargar las citas del paciente:', err)
+        console.error()
         this.isLoadingAppointments = false
         this.cdr.detectChanges()
       }
