@@ -1,0 +1,101 @@
+<div class="registro-wrapper">
+
+  <div class="registro-container">
+    <header class="registro-header">
+      <h1>Portal de Pacientes</h1>
+      <p>Crea tu cuenta para agendar citas y ver tu historial médico.</p>
+    </header>
+
+    @if (errorMessage) {
+      <div class="alert-box error">{{ errorMessage }}</div>
+    }
+    @if (successMessage) {
+      <div class="alert-box success">{{ successMessage }}</div>
+    }
+
+    @if (!successMessage) {
+      <form (ngSubmit)="registrar()">
+
+        <h3 class="section-title">1. Datos de Acceso</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Correo Electrónico *</label>
+            <input type="email" [(ngModel)]="patientData.email" name="email" required placeholder="tu@correo.com">
+          </div>
+          <div class="form-group">
+            <label>Contraseña *</label>
+            <input type="password" [(ngModel)]="patientData.password" name="password" required placeholder="Mínimo 8 caracteres">
+          </div>
+        </div>
+
+        <h3 class="section-title">2. Información Personal</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Nombres *</label><input type="text" [(ngModel)]="patientData.personData.name" name="name" required></div>
+          <div class="form-group"><label>Apellidos *</label><input type="text" [(ngModel)]="patientData.personData.lastName" name="lastName" required></div>
+
+          <div class="form-group">
+            <label>Tipo Doc. *</label>
+            <select [(ngModel)]="patientData.personData.documentType" name="docType">
+              <option value="DNI">DNI</option>
+              <option value="CARNET_EXTRANJERIA">Carnet de Extranjería</option>
+              <option value="PASAPORTE">Pasaporte</option>
+            </select>
+          </div>
+          <div class="form-group"><label>N° Documento *</label><input type="text" [(ngModel)]="patientData.personData.documentNumber" name="docNum" required></div>
+
+          <div class="form-group"><label>Fecha Nacimiento *</label><input type="date" [(ngModel)]="patientData.personData.birthDate" name="birth"></div>
+          <div class="form-group">
+            <label>Sexo Biológico *</label>
+            <select [(ngModel)]="patientData.personData.biologicalSex" name="sex">
+              <option value="MASCULINO">Masculino</option>
+              <option value="FEMENINO">Femenino</option>
+            </select>
+          </div>
+
+          <div class="form-group"><label>Estado Civil</label>
+            <select [(ngModel)]="patientData.patientData.maritalStatus" name="marital">
+              <option value="SOLTERO">Soltero(a)</option>
+              <option value="CASADO">Casado(a)</option>
+              <option value="DIVORCIADO">Divorciado(a)</option>
+              <option value="VIUDO">Viudo(a)</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Celular</label><input type="text" [(ngModel)]="patientData.personData.phone" name="phone"></div>
+
+          <div class="form-group full-width"><label>Dirección (Opcional)</label><input type="text" [(ngModel)]="patientData.personData.address" name="address"></div>
+        </div>
+
+        <h3 class="section-title">3. Perfil Médico y Contacto</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Tipo de Sangre</label><input type="text" [(ngModel)]="patientData.patientData.bloodType" name="blood" placeholder="Ej: O+"></div>
+          <div class="form-group"><label>Seguro de Salud</label><input type="text" [(ngModel)]="patientData.patientData.healthInsurance" name="insurance" placeholder="Ej: EsSalud, Rimac..."></div>
+
+          <div class="form-group full-width contact-box">
+            <label class="box-label">Contacto en caso de emergencia:</label>
+            <div class="inner-grid">
+              <input type="text" [(ngModel)]="patientData.patientData.emergencyContactName" name="emName" placeholder="Nombre completo">
+              <input type="text" [(ngModel)]="patientData.patientData.emergencyContactRelation" name="emRel" placeholder="Parentesco (Ej. Madre)">
+              <input type="text" [(ngModel)]="patientData.patientData.emergencyContactPhone" name="emPhone" placeholder="Teléfono">
+            </div>
+          </div>
+        </div>
+
+        <div class="terms-box">
+          <input type="checkbox" [(ngModel)]="patientData.patientData.consentData" name="consent" id="consent">
+          <label for="consent">Autorizo a la clínica el almacenamiento y tratamiento de mis datos personales y médicos para los fines de mi atención.</label>
+        </div>
+
+        <button type="submit" class="btn-black btn-submit" [disabled]="isProcessing">
+          {{ isProcessing ? 'Procesando registro...' : 'Crear Mi Cuenta' }}
+        </button>
+
+        <div class="login-link">
+          ¿Ya tienes una cuenta? <a routerLink="/login">Inicia sesión aquí</a>
+        </div>
+
+      </form>
+    }
+
+  </div>
+
+</div>

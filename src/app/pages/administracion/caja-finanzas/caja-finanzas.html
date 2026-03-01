@@ -1,0 +1,227 @@
+<div class="finances-container">
+
+  <header class="page-header">
+    <div class="header-titles">
+      <h1>Tesorería y Caja</h1>
+      <p>Control de ingresos, apertura y cierre de turno.</p>
+    </div>
+  </header>
+
+  @if (isLoadingRegister) {
+    <div class="loading-state">Consultando estado de caja...</div>
+  }
+
+  @if (!isLoadingRegister) {
+    <div class="dashboard-grid">
+
+      <section class="register-panel">
+
+        @if (!currentRegister) {
+          <div class="closed-state">
+            <div class="icon-lock">🔒</div>
+            <h2>Caja Cerrada</h2>
+            <p>Debes aperturar la caja de tu turno para poder procesar pagos pendientes.</p>
+            <button class="btn-black btn-huge" (click)="abrirModalApertura()">Aperturar Caja Ahora</button>
+          </div>
+        }
+
+        @if (currentRegister) {
+          <div class="open-state">
+            <div class="status-banner">
+              <span class="pulse-dot"></span> CAJA ACTIVA
+            </div>
+
+            <div class="balance-board">
+              <div class="balance-item">
+                <span class="label">Saldo Inicial</span>
+                <span class="amount text-muted">S/ {{ currentRegister.initialBalance | number:'1.2-2' }}</span>
+              </div>
+              <div class="balance-item main-balance">
+                <span class="label">Balance Esperado (Actual)</span>
+                <span class="amount">S/ {{ currentRegister.expectedBalance | number:'1.2-2' }}</span>
+              </div>
+            </div>
+
+            <div class="register-details">
+              <p><strong>Apertura:</strong> {{ currentRegister.openingTime | date:'medium' }}</p>
+              <p><strong>ID Caja:</strong> <span class="id-text">{{ currentRegister.id.substring(0,8) }}...</span></p>
+            </div>
+
+            <button class="btn-danger btn-block" (click)="abrirModalCierre()">Cerrar Caja (Fin de Turno)</button>
+          </div>
+        }
+      </section>
+
+      <section class="payments-panel">
+        <div class="panel-header">
+          <h2>Pagos Pendientes</h2>
+        </div>
+        @if (!currentRegister) {
+          <div class="empty-payments">
+            <p>Abre la caja para ver y procesar los cobros.</p>
+          </div>
+        }
+        @if (currentRegister) {
+          <div class="payments-content">
+
+            @if (isLoadingPayments) {
+              <div class="loading-state inline-loading">Buscando deudas...</div>
+            }
+
+            @if (!isLoadingPayments && pendingPayments.length === 0) {
+              <div class="empty-state-nice">
+                <div class="icon">✅</div>
+                <h3>¡Todo al día!</h3>
+                <p>No hay pacientes con pagos pendientes en este momento.</p>
+                <button class="btn-outline refresh-btn" (click)="loadPendingPayments(0)">↻ Refrescar Lista</button>
+              </div>
+            }
+
+            @if (!isLoadingPayments && pendingPayments.length > 0) {
+              <div class="payments-list">
+                @for (pay of pendingPayments; track pay.id) {
+                  <div class="payment-card">
+
+                    <div class="pay-header">
+                      <span class="badge pending">Pendiente</span>
+                    </div>
+
+                    <div class="pay-body">
+                      <p><strong>Paciente:</strong> {{ patientDictionary[pay.patientId] || 'Cargando...' }}</p>
+                      <p><strong>Generado:</strong> {{ pay.paymentDate | date:'medium' }}</p>
+                      <p class="id-text">Ref. Cita: {{ pay.appointmentId.substring(0,8) }}...</p>
+                    </div>
+
+                    <div class="pay-footer">
+                      <button class="btn-black btn-block" (click)="abrirModalCobro(pay)">Procesar Cobro</button>
+                    </div>
+
+                  </div>
+                }
+
+                @if (paymentsTotalPages > 1) {
+                  <div class="pagination-small">
+                    <button [disabled]="paymentsPage === 0" (click)="loadPendingPayments(paymentsPage - 1)">◀</button>
+                    <span>Pág. {{ paymentsPage + 1 }} de {{ paymentsTotalPages }}</span>
+                    <button [disabled]="paymentsPage >= paymentsTotalPages - 1" (click)="loadPendingPayments(paymentsPage + 1)">▶</button>
+                  </div>
+                }
+              </div>
+            }
+
+          </div>
+        }
+      </section>
+
+    </div>
+  }
+
+  @if (showOpenModal) {
+    <div class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Apertura de Caja</h2>
+          <button class="close-btn" (click)="showOpenModal = false">✖</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Monto Inicial de Efectivo (Sencillo/Fondo):</label>
+            <div class="input-money">
+              <span>S/</span>
+              <input type="number" [(ngModel)]="openData.initialBalance" min="0" step="0.10">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Notas Adicionales (Opcional):</label>
+            <textarea [(ngModel)]="openData.notes" rows="2" placeholder="Ej: Faltan billetes de 10..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-black btn-block" [disabled]="isProcessing" (click)="confirmarApertura()">
+            {{ isProcessing ? 'Abriendo...' : 'Confirmar Apertura' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (showCloseModal) {
+    <div class="modal-overlay">
+      <div class="modal-content warning-theme">
+        <div class="modal-header">
+          <h2>Cierre de Caja</h2>
+          <button class="close-btn" (click)="showCloseModal = false">✖</button>
+        </div>
+        <div class="modal-body">
+          <div class="info-alert">
+            El sistema calcula que deberías tener <strong>S/ {{ currentRegister?.expectedBalance | number:'1.2-2' }}</strong>.
+          </div>
+          <div class="form-group">
+            <label>Monto Real en Físico (Conteo Final):</label>
+            <div class="input-money">
+              <span>S/</span>
+              <input type="number" [(ngModel)]="closeData.actualBalance" min="0" step="0.10">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Justificación de descuadre (Si aplica):</label>
+            <textarea [(ngModel)]="closeData.notes" rows="2" placeholder="Ej: Sobró 1 sol / Faltó cambio..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-danger btn-block" [disabled]="isProcessing" (click)="confirmarCierre()">
+            {{ isProcessing ? 'Procesando...' : 'Confirmar Cierre' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (showPaymentModal) {
+    <div class="modal-overlay">
+      <div class="modal-content success-theme">
+        <div class="modal-header">
+          <h2>Realizar Cobro</h2>
+          <button class="close-btn" (click)="showPaymentModal = false">✖</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="patient-banner">
+            Cobro a: <strong>{{ patientDictionary[selectedPayment?.patientId || ''] }}</strong>
+          </div>
+
+          <div class="form-group">
+            <label>1. Monto a Cobrar:</label>
+            <div class="input-money" style="margin-bottom: 1rem;">
+              <span>S/</span>
+              <input type="number" [(ngModel)]="paymentData.amount" min="0" step="0.10">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>2. Método de Pago del Paciente:</label>
+            <select [(ngModel)]="paymentData.paymentMethod" class="big-select">
+              <option value="CASH">💵 Efectivo (Soles)</option>
+              <option value="CREDIT_CARD">💳 Tarjeta de Crédito</option>
+              <option value="DEBIT_CARD">💳 Tarjeta de Débito</option>
+              <option value="DIGITAL_WALLET">📱 Billeteras Digitales</option>
+            </select>
+          </div>
+
+          @if (paymentData.paymentMethod !== 'CASH') {
+            <div class="info-alert">
+              Verifica que la transferencia o pago por POS se haya <strong>realizado exitosamente</strong> antes de confirmar.
+            </div>
+          }
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-black btn-block" [disabled]="isProcessing" (click)="confirmarPago()">
+            {{ isProcessing ? 'Registrando...' : 'Confirmar Cobro' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

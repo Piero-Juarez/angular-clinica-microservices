@@ -84,22 +84,296 @@
         <aside class="quick-actions">
           <h2>Acciones Rápidas</h2>
 
-          <button class="action-btn">
+          <button class="action-btn" (click)="abrirModalPaciente()">
             <span class="icon">➕</span>
             <span>Registrar Nuevo Paciente</span>
           </button>
 
-          <button class="action-btn">
+          <button class="action-btn" (click)="abrirModalMedico()">
             <span class="icon">👨‍⚕️</span>
             <span>Registrar Nuevo Médico</span>
           </button>
 
-          <button class="action-btn outline">
+          <button class="action-btn outline" (click)="abrirModalCita()">
             <span class="icon">📅</span>
             <span>Crear Nueva Cita</span>
           </button>
         </aside>
 
+      </div>
+    </div>
+  }
+
+  @if (showPatientModal) {
+    <div class="modal-overlay">
+      <div class="modal-content wide-modal">
+        <div class="modal-header">
+          <h2>Registro Completo de Paciente</h2>
+          <button class="close-btn" (click)="cerrarModalPaciente()">✖</button>
+        </div>
+
+        <div class="modal-body scrollable">
+          <h3 class="section-title">Credenciales de Acceso</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>Correo Electrónico:</label><input type="email" [(ngModel)]="patientData.email"></div>
+            <div class="form-group"><label>Contraseña Temporal:</label><input type="text" [(ngModel)]="patientData.password" placeholder="Ej: DNI del paciente"></div>
+          </div>
+
+          <h3 class="section-title">Datos Personales (PersonData)</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>Nombres:</label><input type="text" [(ngModel)]="patientData.personData.name"></div>
+            <div class="form-group"><label>Apellidos:</label><input type="text" [(ngModel)]="patientData.personData.lastName"></div>
+
+            <div class="form-group">
+              <label>Tipo Documento:</label>
+              <select [(ngModel)]="patientData.personData.documentType">
+                <option value="DNI">DNI</option>
+                <option value="CARNET_EXTRANJERIA">Carnet de Extranjería</option>
+                <option value="PASAPORTE">Pasaporte</option>
+              </select>
+            </div>
+            <div class="form-group"><label>N° Documento:</label><input type="text" [(ngModel)]="patientData.personData.documentNumber"></div>
+
+            <div class="form-group"><label>Fecha Nacimiento:</label><input type="date" [(ngModel)]="patientData.personData.birthDate"></div>
+            <div class="form-group">
+              <label>Sexo Biológico:</label>
+              <select [(ngModel)]="patientData.personData.biologicalSex">
+                <option value="MASCULINO">Masculino</option>
+                <option value="FEMENINO">Femenino</option>
+              </select>
+            </div>
+
+            <div class="form-group"><label>Celular:</label><input type="text" [(ngModel)]="patientData.personData.phone"></div>
+            <div class="form-group"><label>Estado Civil:</label>
+              <select [(ngModel)]="patientData.patientData.maritalStatus">
+                <option value="SOLTERO">Soltero(a)</option>
+                <option value="CASADO">Casado(a)</option>
+                <option value="DIVORCIADO">Divorciado(a)</option>
+                <option value="VIUDO">Viudo(a)</option>
+              </select>
+            </div>
+
+            <div class="form-group"><label>Dirección:</label><input type="text" [(ngModel)]="patientData.personData.address"></div>
+            <div class="form-group"><label>Ubigeo:</label><input type="text" [(ngModel)]="patientData.personData.ubigeo" placeholder="Ej: 150101"></div>
+          </div>
+
+          <h3 class="section-title">Perfil Médico y Seguro (PatientData)</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>Tipo de Sangre:</label><input type="text" [(ngModel)]="patientData.patientData.bloodType" placeholder="Ej: O+, A-"></div>
+            <div class="form-group"><label>Ocupación:</label><input type="text" [(ngModel)]="patientData.patientData.occupation"></div>
+            <div class="form-group"><label>Seguro de Salud:</label><input type="text" [(ngModel)]="patientData.patientData.healthInsurance" placeholder="Ej: EsSalud, Rimac..."></div>
+            <div class="form-group"><label>N° de Póliza:</label><input type="text" [(ngModel)]="patientData.patientData.policyNumber"></div>
+          </div>
+
+          <h3 class="section-title">Contacto de Emergencia</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>Nombre Contacto:</label><input type="text" [(ngModel)]="patientData.patientData.emergencyContactName"></div>
+            <div class="form-group"><label>Parentesco:</label><input type="text" [(ngModel)]="patientData.patientData.emergencyContactRelation" placeholder="Ej: Madre, Esposo"></div>
+            <div class="form-group"><label>Teléfono Contacto:</label><input type="text" [(ngModel)]="patientData.patientData.emergencyContactPhone"></div>
+
+            <div class="form-group" style="display: flex; flex-direction: row; align-items: center; gap: 0.5rem; margin-top: 1.5rem;">
+              <input type="checkbox" [(ngModel)]="patientData.patientData.consentData" id="consent" style="width: 20px; height: 20px;">
+              <label for="consent" style="margin: 0; cursor: pointer;">Acepta Términos de Datos</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-black btn-block" [disabled]="isProcessing" (click)="registrarPaciente()">
+            {{ isProcessing ? 'Guardando...' : 'Crear Perfil de Paciente' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (showDoctorModal) {
+    <div class="modal-overlay">
+      <div class="modal-content wide-modal doc-theme">
+        <div class="modal-header">
+          <h2>Alta Completa de Nuevo Médico</h2>
+          <button class="close-btn" (click)="cerrarModalMedico()">✖</button>
+        </div>
+
+        <div class="modal-body scrollable">
+          <h3 class="section-title">Credenciales Corporativas</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>Correo Corporativo:</label><input type="email" [(ngModel)]="doctorData.email"></div>
+            <div class="form-group"><label>Contraseña Temporal:</label><input type="text" [(ngModel)]="doctorData.password"></div>
+          </div>
+
+          <h3 class="section-title">Datos Personales (PersonData)</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>Nombres:</label><input type="text" [(ngModel)]="doctorData.personData.name"></div>
+            <div class="form-group"><label>Apellidos:</label><input type="text" [(ngModel)]="doctorData.personData.lastName"></div>
+
+            <div class="form-group">
+              <label>Tipo Documento:</label>
+              <select [(ngModel)]="doctorData.personData.documentType">
+                <option value="DNI">DNI</option>
+                <option value="CARNET_EXTRANJERIA">CE</option>
+                <option value="PASAPORTE">Pasaporte</option>
+              </select>
+            </div>
+            <div class="form-group"><label>N° Documento:</label><input type="text" [(ngModel)]="doctorData.personData.documentNumber"></div>
+
+            <div class="form-group"><label>Fecha Nacimiento:</label><input type="date" [(ngModel)]="doctorData.personData.birthDate"></div>
+            <div class="form-group">
+              <label>Sexo Biológico:</label>
+              <select [(ngModel)]="doctorData.personData.biologicalSex">
+                <option value="MASCULINO">Masculino</option>
+                <option value="FEMENINO">Femenino</option>
+              </select>
+            </div>
+
+            <div class="form-group"><label>Celular:</label><input type="text" [(ngModel)]="doctorData.personData.phone"></div>
+            <div class="form-group"><label>Ubigeo:</label><input type="text" [(ngModel)]="doctorData.personData.ubigeo"></div>
+            <div class="form-group full-width"><label>Dirección:</label><input type="text" [(ngModel)]="doctorData.personData.address"></div>
+          </div>
+
+          <h3 class="section-title">Perfil Profesional (DoctorData)</h3>
+          <div class="form-grid">
+            <div class="form-group"><label>Código CMP:</label><input type="text" [(ngModel)]="doctorData.doctorData.cmp"></div>
+            <div class="form-group"><label>Código RNE (Opcional):</label><input type="text" [(ngModel)]="doctorData.doctorData.rne"></div>
+
+            <div class="form-group"><label>Especialidad Principal:</label><input type="text" [(ngModel)]="doctorData.doctorData.mainSpecialty"></div>
+            <div class="form-group"><label>Universidad de Origen:</label><input type="text" [(ngModel)]="doctorData.doctorData.universityOfOrigin"></div>
+
+            <div class="form-group"><label>Años de Experiencia:</label><input type="number" [(ngModel)]="doctorData.doctorData.yearsOfExperience" min="0"></div>
+            <div class="form-group"><label>Tiempo Promedio Consulta (Minutos):</label><input type="number" [(ngModel)]="doctorData.doctorData.averageConsultationTime" min="15" step="5"></div>
+          </div>
+
+          <h3 class="section-title">Contrato y Perfil Público</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Tipo de Contrato:</label>
+              <select [(ngModel)]="doctorData.doctorData.contractType">
+                <option value="FULL_TIME">Tiempo Completo</option>
+                <option value="PART_TIME">Medio Tiempo</option>
+                <option value="INDEPENDENT">Independiente / Por horas</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Salario Base (S/):</label><input type="number" [(ngModel)]="doctorData.doctorData.baseSalary" min="0" step="100"></div>
+
+            <div class="form-group full-width">
+              <label>Biografía Pública (Visible para pacientes):</label>
+              <textarea [(ngModel)]="doctorData.doctorData.publicBiography" rows="3" placeholder="Breve descripción del perfil del médico..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-black btn-block" [disabled]="isProcessing" (click)="registrarMedico()">
+            {{ isProcessing ? 'Guardando...' : 'Habilitar Médico' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (showAppointmentModal) {
+    <div class="modal-overlay">
+      <div class="modal-content wide-modal">
+        <div class="modal-header">
+          <h2>Agendar Cita (Recepción)</h2>
+          <button class="close-btn" (click)="cerrarModalCita()">✖</button>
+        </div>
+
+        <div class="modal-body scrollable">
+
+          <h3 class="section-title">1. Identificar Paciente</h3>
+          <div class="search-patient-box">
+            <div class="input-money" style="flex: 1;"> <span>N° Doc</span>
+              <input type="text" [(ngModel)]="searchDocumentNumber" placeholder="Ej: 74102574" (keyup.enter)="buscarPacientePorDocumento()">
+            </div>
+            <button class="btn-black" style="padding: 0 1.5rem;" (click)="buscarPacientePorDocumento()" [disabled]="isSearchingPatient">
+              {{ isSearchingPatient ? '...' : 'Buscar' }}
+            </button>
+          </div>
+
+          @if (patientSearchError) {
+            <div class="error-text">{{ patientSearchError }}</div>
+          }
+
+          @if (foundPatient) {
+            <div class="patient-found-card">
+              <div class="icon">👤</div>
+              <div class="details">
+                <h4>{{ foundPatient.personData.name }} {{ foundPatient.personData.lastName }}</h4>
+                <p>{{ foundPatient.personData.documentType }}: {{ foundPatient.personData.documentNumber }} | Tel: {{ foundPatient.personData.phone || 'N/A' }}</p>
+              </div>
+              <button class="btn-clear" (click)="foundPatient = null; searchDocumentNumber = ''">Cambiar</button>
+            </div>
+          }
+
+          @if (foundPatient) {
+            <ng-container>
+              <h3 class="section-title">2. Detalles de la Atención</h3>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Médico Especialista:</label>
+                  <select [(ngModel)]="newAppointment.doctorId" (change)="onDoctorOrDateChange()">
+                    <option value="">-- Seleccione un médico --</option>
+                    @for (doc of doctorsList; track doc.id) {
+                      <option [value]="doc.id">
+                        Dr(a). {{ doc.personData.lastName }} ({{ doc.mainSpecialty }})
+                      </option>
+                    }
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Fecha de la Cita:</label>
+                <input type="date" [(ngModel)]="newAppointment.date" [min]="todayDate" (change)="onDoctorOrDateChange()">
+              </div>
+
+              @if (newAppointment.date && newAppointment.doctorId) {
+                <div class="form-group">
+                  <label>Horarios Disponibles:</label>
+                  @if (isLoadingTimes) {
+                    <div class="loading-text">Sincronizando agenda del médico...</div>
+                  }
+
+                  @if (!isLoadingTimes) {
+                    <div class="times-grid">
+                      @for (slot of availableTimes; track slot?.time) {
+                        <button
+                          class="time-btn"
+                          [class.selected]="newAppointment.time === slot.time"
+                          [disabled]="!slot.isAvailable && newAppointment.time !== slot.time"
+                          (click)="seleccionarHoraCita(slot.time)"
+                        >
+                          {{ slot.time }}
+                        </button>
+                      }
+                    </div>
+                  }
+                  @if (availableTimes.length === 0 && !isLoadingTimes) {
+                    <p class="error-text">No hay turnos libres para este día.</p>
+                  }
+                </div>
+              }
+
+              @if (newAppointment.time) {
+                <div class="form-group full-width">
+                  <label>Motivo de la consulta / Notas (Opcional):</label>
+                  <textarea [(ngModel)]="newAppointment.notes" rows="2" placeholder="Ej: Paciente refiere dolor de cabeza desde hace 3 días..."></textarea>
+                </div>
+              }
+            </ng-container>
+          }
+
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-black btn-block"
+                  [disabled]="isProcessing || !foundPatient || !newAppointment.time"
+                  (click)="agendarCitaAdmin()">
+            {{ isProcessing ? 'Registrando...' : 'Confirmar y Agendar Cita' }}
+          </button>
+        </div>
       </div>
     </div>
   }

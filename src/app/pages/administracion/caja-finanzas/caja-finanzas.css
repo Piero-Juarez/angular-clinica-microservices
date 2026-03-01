@@ -1,0 +1,118 @@
+.finances-container { max-width: 1300px; margin: 0 auto; font-family: system-ui, -apple-system, sans-serif; color: #000; }
+.page-header { border-bottom: 4px solid #000; margin-bottom: 2rem; padding-bottom: 1rem; h1 { font-size: 2.5rem; text-transform: uppercase; font-weight: 900; margin: 0; } p { font-size: 1.1rem; color: #555; margin: 0.5rem 0 0 0; } }
+
+.dashboard-grid { display: grid; grid-template-columns: 350px 1fr; gap: 2rem; align-items: start; }
+@media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
+
+/* PANELES */
+.register-panel { border: 4px solid #000; background: #fff; box-shadow: 8px 8px 0 #000; display: flex; flex-direction: column; }
+.payments-panel { border: 4px solid #000; background: #fdfdfd; box-shadow: 8px 8px 0 #000; height: 100%; min-height: 400px; display: flex; flex-direction: column; }
+
+/* ESTADO CERRADO */
+.closed-state { padding: 3rem 2rem; text-align: center; background: #f5f5f5; .icon-lock { font-size: 5rem; margin-bottom: 1rem; } h2 { font-weight: 900; text-transform: uppercase; font-size: 1.8rem; margin: 0 0 1rem 0; color: #ff1744; } p { margin-bottom: 2rem; font-size: 1.1rem; } }
+.btn-huge { width: 100%; padding: 1.2rem; font-size: 1.2rem; font-weight: 900; text-transform: uppercase; }
+
+/* ESTADO ABIERTO */
+.open-state { padding: 0; display: flex; flex-direction: column; }
+.status-banner { background: #00e676; color: #000; padding: 0.8rem; font-weight: 900; text-align: center; text-transform: uppercase; border-bottom: 4px solid #000; display: flex; justify-content: center; align-items: center; gap: 0.5rem; }
+.pulse-dot { width: 12px; height: 12px; background: #000; border-radius: 50%; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0,0,0,0.4); } 70% { box-shadow: 0 0 0 10px rgba(0,0,0,0); } 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); } }
+
+.balance-board { padding: 1.5rem; background: #fff; }
+.balance-item { display: flex; flex-direction: column; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 2px dashed #eee; .label { font-size: 0.9rem; font-weight: 800; text-transform: uppercase; color: #666; } .amount { font-size: 1.5rem; font-weight: 900; } .text-muted { color: #555; } }
+.main-balance { border: none; margin: 0; padding: 0; background: #eef2ff; padding: 1rem; border: 2px solid #000; .label { color: #000; } .amount { font-size: 2.2rem; color: #000; } }
+
+.register-details { padding: 0 1.5rem 1.5rem 1.5rem; font-size: 0.95rem; p { margin: 0.3rem 0; } .id-text { font-family: monospace; background: #eee; padding: 0.2rem; } }
+.btn-block { width: 100%; padding: 1.2rem; font-weight: 900; text-transform: uppercase; border: none; border-top: 4px solid #000; font-size: 1.1rem; cursor: pointer; }
+
+/* PANEL DERECHO */
+.panel-header { background: #000; color: #fff; padding: 1rem 1.5rem; border-bottom: 4px solid #000; h2 { margin: 0; font-size: 1.3rem; font-weight: 900; text-transform: uppercase; } }
+.empty-payments { flex: 1; display: flex; justify-content: center; align-items: center; padding: 2rem; text-align: center; color: #666; font-style: italic; background: #f0f0f0; }
+.active-wait { background: #fff; color: #ccc; }
+
+/* BOTONES GLOBALES */
+.btn-black { background: #000; color: #fff; border: 3px solid #000; cursor: pointer; transition: all 0.1s; &:active { transform: translate(4px, 4px); box-shadow: none; } }
+.btn-danger { background: #ff1744; color: #fff; cursor: pointer; transition: background 0.2s; &:hover { background: #d50000; } }
+
+/* MODALES */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(3px); display: flex; justify-content: center; align-items: center; z-index: 1000; animation: fadeIn 0.2s ease-out; }
+@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+.modal-content { background: #fff; border: 4px solid #000; box-shadow: 10px 10px 0 #000; width: 90%; max-width: 450px; }
+.modal-header { background: #000; color: #fff; padding: 1.2rem; border-bottom: 4px solid #000; display: flex; justify-content: space-between; align-items: center; h2 { margin: 0; font-weight: 900; text-transform: uppercase; } .close-btn { background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; } }
+.modal-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+.form-group { display: flex; flex-direction: column; gap: 0.5rem; label { font-weight: 800; text-transform: uppercase; font-size: 0.9rem; } textarea { padding: 0.8rem; border: 3px solid #000; font-family: inherit; font-size: 1rem; outline: none; } }
+.input-money { display: flex; border: 3px solid #000; span { background: #eee; padding: 0.8rem 1rem; border-right: 3px solid #000; font-weight: 900; font-size: 1.2rem; } input { flex: 1; border: none; padding: 0.8rem; font-size: 1.5rem; font-weight: 900; outline: none; width: 100%; } }
+.info-alert { background: #fff9c4; border: 2px dashed #000; padding: 1rem; font-size: 1.1rem; text-align: center; }
+.warning-theme .modal-header { background: #ff1744; }
+.modal-footer { padding: 1.5rem; background: #f9f9f9; border-top: 4px solid #000; }
+.modal-footer button { border: 3px solid #000; box-shadow: 4px 4px 0 #000; }
+
+/* --- CONTENIDO DE PAGOS --- */
+.payments-content {
+  flex: 1; display: flex; flex-direction: column; background: #fff;
+}
+
+.empty-state-nice {
+  padding: 4rem 2rem; text-align: center; color: #555;
+  .icon { font-size: 4rem; margin-bottom: 1rem; }
+  h3 { color: #000; font-weight: 900; font-size: 1.5rem; text-transform: uppercase; margin: 0 0 0.5rem 0;}
+  .refresh-btn { margin-top: 1.5rem; padding: 0.8rem 1.5rem; cursor: pointer; border: 2px solid #000; background: #fff; font-weight: 800; text-transform: uppercase;}
+  .refresh-btn:hover { background: #eee; }
+}
+
+.inline-loading { text-align: center; padding: 2rem; font-weight: 800; text-transform: uppercase; border-bottom: 2px dashed #ccc;}
+
+/* LISTA Y TARJETAS DE PAGOS */
+.payments-list {
+  padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; overflow-y: auto; max-height: 65vh;
+}
+
+.payment-card {
+  border: 3px solid #000; background: #fdfdfd; box-shadow: 4px 4px 0 #000;
+  display: flex; flex-direction: column;
+}
+
+.pay-header {
+  background: #000; color: #fff; padding: 1rem; display: flex; justify-content: space-between; align-items: center;
+  .amount { font-size: 1.5rem; font-weight: 900; }
+  .badge.pending { background: #ffe600; color: #000; padding: 0.2rem 0.5rem; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; border: 2px solid #000;}
+}
+
+.pay-body {
+  padding: 1.2rem;
+  p { margin: 0.4rem 0; font-size: 0.95rem;}
+  .id-text { margin-top: 0.8rem; font-family: monospace; font-size: 0.8rem; color: #666; background: #eee; padding: 0.2rem; border: 1px solid #ccc;}
+}
+
+.pay-footer { border-top: 3px solid #000; }
+.pay-footer .btn-block { padding: 1rem; font-size: 1rem; border: none; }
+
+/* Paginación pequeña interna */
+.pagination-small {
+  display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 1rem;
+  button { padding: 0.5rem 1rem; border: 2px solid #000; background: #fff; font-weight: 800; cursor: pointer; }
+  button:hover:not(:disabled) { background: #eee; }
+  button:disabled { border-color: #ccc; color: #ccc; cursor: not-allowed; }
+  span { font-weight: 800; font-size: 0.9rem;}
+}
+
+/* --- MODAL DE COBRO (SUCCESS THEME) --- */
+.success-theme .modal-header { background: #000; } /* Header negro estricto */
+
+.patient-banner {
+  background: #f5f5f5; border: 2px dashed #000; padding: 1rem; font-size: 1.1rem; text-align: center;
+  strong { text-transform: uppercase; }
+}
+
+.amount-display {
+  text-align: center; font-size: 3.5rem; font-weight: 900; margin: 1.5rem 0; color: #00e676;
+  text-shadow: 2px 2px 0 #000; /* Efecto brutalista de texto */
+  border-bottom: 4px solid #000; padding-bottom: 1rem;
+}
+
+.big-select {
+  width: 100%; padding: 1rem; border: 3px solid #000; font-size: 1.1rem; font-weight: 800;
+  font-family: inherit; outline: none; background: #fff; cursor: pointer;
+  box-shadow: 4px 4px 0 #000; transition: transform 0.1s;
+}
+.big-select:focus { transform: translate(2px, 2px); box-shadow: 2px 2px 0 #000; }

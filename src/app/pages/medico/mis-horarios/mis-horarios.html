@@ -1,0 +1,109 @@
+<div class="page-container">
+
+  <header class="page-header">
+    <div class="header-titles">
+      <h1>Mis Horarios de Atención</h1>
+      <p>Configura los días y horas en los que estarás disponible para citas.</p>
+    </div>
+    <button class="btn-black btn-large" (click)="abrirModalCrear()">+ Agregar Horario</button>
+  </header>
+
+  @if (isLoading) {
+    <div class="loading-state">Cargando tu configuración...</div>
+  }
+
+  @if (!isLoading && schedules.length === 0) {
+    <div class="empty-state">
+      <h2>Aún no tienes horarios configurados</h2>
+      <p>Agrega tu disponibilidad para que los pacientes puedan empezar a reservar.</p>
+    </div>
+  }
+
+  @if (!isLoading && schedules.length > 0) {
+    <div class="schedules-grid">
+      @for (schedule of schedules; track schedule.id) {
+        <div class="schedule-card">
+
+          <div class="card-header">
+            <h3>{{ daysDictionary[schedule.dayOfWeek] || schedule.dayOfWeek }}</h3>
+            <span class="badge" [ngClass]="schedule.isActive ? 'active' : 'inactive'">
+          {{ schedule.isActive ? 'Activo' : 'Inactivo' }}
+        </span>
+          </div>
+
+          <div class="card-body">
+            <div class="time-block">
+              <span class="label">Turno:</span>
+              <span class="value">{{ schedule.startTime.substring(0,5) }} - {{ schedule.endTime.substring(0,5) }}</span>
+            </div>
+            <div class="time-block">
+              <span class="label">Duración por cita:</span>
+              <span class="value">{{ schedule.slotDurationMinutes }} mins</span>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <button class="btn-outline" (click)="abrirModalEditar(schedule)">Modificar Regla</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (showModal) {
+    <div class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>{{ isEditing ? 'Editar Horario' : 'Nuevo Día de Atención' }}</h2>
+          <button class="close-btn" (click)="cerrarModal()">✖</button>
+        </div>
+
+        <div class="modal-body">
+
+          <div class="form-group">
+            <label>Día de la semana:</label>
+            <select [(ngModel)]="formData.dayOfWeek" [disabled]="isEditing" class="heavy-select">
+              <option value="MONDAY">Lunes</option>
+              <option value="TUESDAY">Martes</option>
+              <option value="WEDNESDAY">Miércoles</option>
+              <option value="THURSDAY">Jueves</option>
+              <option value="FRIDAY">Viernes</option>
+              <option value="SATURDAY">Sábado</option>
+              <option value="SUNDAY">Domingo</option>
+            </select>
+          </div>
+
+          <div class="time-grid">
+            <div class="form-group">
+              <label>Hora Inicio:</label>
+              <input type="time" [(ngModel)]="formData.startTime">
+            </div>
+            <div class="form-group">
+              <label>Hora Fin:</label>
+              <input type="time" [(ngModel)]="formData.endTime">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Duración de cada cita (Minutos):</label>
+            <input type="number" [(ngModel)]="formData.slotDurationMinutes" min="10" step="5">
+            <small>El sistema dividirá el turno automáticamente en bloques de este tiempo.</small>
+          </div>
+
+          <div class="form-group toggle-group">
+            <input type="checkbox" id="activeStatus" [(ngModel)]="formData.isActive">
+            <label for="activeStatus">Día Activo (Habilitar reservas)</label>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-black btn-block" [disabled]="isProcessing" (click)="guardarHorario()">
+            {{ isProcessing ? 'Guardando...' : 'Confirmar Horario' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

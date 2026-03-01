@@ -8,6 +8,8 @@ import {CreateAppointmentRequest} from '../models/appointment/schedule/createapp
 import {PaginatedResponse} from '../models/paginated-response';
 import {Appointment} from '../models/appointment/appointment';
 import {UpdateAppointmentRequest} from '../models/appointment/update-appointment-request';
+import {DoctorSchedule} from '../models/appointment/schedule/DoctorSchedule';
+import {SavedScheduleRequestDTO} from '../models/appointment/schedule/SavedScheduleRequestDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -39,6 +41,10 @@ export class AppointmentApiService {
     return this.httpClient.put<GenericResponse>(`${this.apiUrl}/update/patient/me/${appointmentId}`, request)
   }
 
+  createAppointmentAdmin(patientId: string, request: CreateAppointmentRequest): Observable<GenericResponse> {
+    return this.httpClient.post<GenericResponse<any>>(`${this.apiUrl}/create/for-patient/${patientId}`, request);
+  }
+
   updateAppointmentAdministration(appointmentId: string, request: UpdateAppointmentRequest): Observable<GenericResponse> {
     return this.httpClient.put<GenericResponse>(`${this.apiUrl}/update/for-patient/${appointmentId}`, request);
   }
@@ -49,6 +55,20 @@ export class AppointmentApiService {
 
   cancelAppointmentAdministration(appointmentId: string): Observable<GenericResponse> {
     return this.httpClient.patch<GenericResponse>(`${this.apiUrl}/cancel/for-patient/${appointmentId}`, {})
+  }
+
+  getMySchedules(): Observable<GenericResponse<DoctorSchedule[]>> {
+    return this.httpClient.get<GenericResponse<DoctorSchedule[]>>(`${this.apiUrl}/search/schedules/doctor/me`);
+  }
+
+  // 2. Crear horarios (Recibe una lista)
+  createMySchedules(requests: SavedScheduleRequestDTO[]): Observable<GenericResponse> {
+    return this.httpClient.post<GenericResponse<any>>(`${this.apiUrl}/create/schedules/me`, requests);
+  }
+
+  // 3. Modificar un horario existente
+  updateMySchedule(scheduleUuid: string, request: SavedScheduleRequestDTO): Observable<GenericResponse> {
+    return this.httpClient.put<GenericResponse<any>>(`${this.apiUrl}/update/schedules/me/${scheduleUuid}`, request);
   }
 
 }

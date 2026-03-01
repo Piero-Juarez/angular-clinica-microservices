@@ -5,5 +5,6 @@ export const environment = {
   pathAuth: '/auth/v1',
   pathPerson: '/person/v1',
   pathAppointment: '/appointment/v1',
-  pathMedicalHistory: '/medicalhistory/v1'
+  pathMedicalHistory: '/medicalhistory/v1',
+  pathFinances: '/finances/v1'
 };

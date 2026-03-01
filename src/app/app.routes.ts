@@ -15,9 +15,13 @@ import {ListadoPacientes} from './pages/administracion/listado-pacientes/listado
 import {ListadoMedicos} from './pages/administracion/listado-medicos/listado-medicos';
 import {ListadoAdministracion} from './pages/administracion/listado-administracion/listado-administracion';
 import {ListadoCitas} from './pages/administracion/listado-citas/listado-citas';
+import {CajaFinanzas} from './pages/administracion/caja-finanzas/caja-finanzas';
+import {RegistroPaciente} from './pages/registro-paciente/registro-paciente';
+import {MisHorarios} from './pages/medico/mis-horarios/mis-horarios';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
+  { path: 'registro-paciente', component: RegistroPaciente },
 
   // PORTAL PARA PACIENTE
   {
@@ -43,7 +47,7 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { roles: ['DOCTOR'] },
     children: [
-
+      { path: 'mis-horarios', component: MisHorarios }
     ]
   },
 
@@ -60,7 +64,8 @@ export const routes: Routes = [
       { path: 'pacientes', component: ListadoPacientes },
       { path: 'medicos', component: ListadoMedicos },
       { path: 'personal', component: ListadoAdministracion },
-      { path: 'citas', component: ListadoCitas }
+      { path: 'citas', component: ListadoCitas },
+      { path: 'finanzas', component: CajaFinanzas }
     ]
   },
 
